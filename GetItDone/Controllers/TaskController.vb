@@ -49,7 +49,11 @@
 
         Function Delete(id As Integer) As ActionResult
             taskservice.DeleteTask(id)
-            Return Me.Content(id.ToString())
+            If Request.IsAjaxRequest() Then
+                Return Me.Content(id.ToString())
+            Else
+                Return RedirectToAction("Process")
+            End If
         End Function
 
         Function Process() As ActionResult
@@ -93,6 +97,19 @@
                 End If
             End If
             Return RedirectToAction("Process")
+        End Function
+
+        Function Finish(id As Integer) As ActionResult
+            Return View(taskservice.GetFinishingTask(id))
+        End Function
+
+        <HttpPost()>
+        Function Finish(task As FinishTaskModel) As ActionResult
+            If ModelState.IsValid Then
+                taskservice.FinishTask(task.id)
+            End If
+
+            Return RedirectToAction("Index")
         End Function
     End Class
 End Namespace

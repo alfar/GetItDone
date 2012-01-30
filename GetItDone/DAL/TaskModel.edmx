@@ -60,6 +60,7 @@
           <Property Name="AssignedToId" Type="int" />
           <Property Name="ContextId" Type="int" />
           <Property Name="ProjectId" Type="int" />
+          <Property Name="Finished" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="FK_ContextTask">
           <End Role="Contexts" Type="TaskModel.Store.Contexts" Multiplicity="0..1" />
@@ -144,6 +145,7 @@
           <Property Type="Int32" Name="ContextId" Nullable="true" />
           <NavigationProperty Name="Project" Relationship="TaskModel.ProjectTask" FromRole="Task" ToRole="Project" />
           <Property Type="Int32" Name="ProjectId" Nullable="true" />
+          <Property Type="Boolean" Name="Finished" Nullable="false" />
         </EntityType>
         <Association Name="TaskAssignment">
           <End Type="TaskModel.Person" Role="Person" Multiplicity="0..1" />
@@ -219,7 +221,8 @@
     <EntitySetMapping Name="Tasks">
       <EntityTypeMapping TypeName="IsTypeOf(TaskModel.Task)">
         <MappingFragment StoreEntitySet="Tasks">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Finished" ColumnName="Finished" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Title" ColumnName="Title" />
           <ScalarProperty Name="Notes" ColumnName="Notes" />
           <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
