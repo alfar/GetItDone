@@ -16,7 +16,7 @@ Imports System.ComponentModel
 Imports System.Xml.Serialization
 Imports System.Runtime.Serialization
 
-<Assembly: EdmSchemaAttribute("3ad5fc0a-ae4b-4aa4-b88e-c6e751e9553f")>
+<Assembly: EdmSchemaAttribute("f197111c-6022-47ed-a68e-dfad235866c0")>
 #Region "EDM Relationship Metadata"
 <Assembly: EdmRelationshipAttribute("TaskModel", "TaskAssignment", "Person", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Person), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
 <Assembly: EdmRelationshipAttribute("TaskModel", "ContextTask", "Context", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Context), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
@@ -620,12 +620,14 @@ Public Partial Class Task
     ''' <param name="title">Initial value of the Title property.</param>
     ''' <param name="notes">Initial value of the Notes property.</param>
     ''' <param name="ownerId">Initial value of the OwnerId property.</param>
-    Public Shared Function CreateTask(id As Global.System.Int32, title As Global.System.String, notes As Global.System.String, ownerId As Global.System.Guid) As Task
+    ''' <param name="finished">Initial value of the Finished property.</param>
+    Public Shared Function CreateTask(id As Global.System.Int32, title As Global.System.String, notes As Global.System.String, ownerId As Global.System.Guid, finished As Global.System.Boolean) As Task
         Dim task as Task = New Task
         task.Id = id
         task.Title = title
         task.Notes = notes
         task.OwnerId = ownerId
+        task.Finished = finished
         Return task
     End Function
 
@@ -807,6 +809,31 @@ Public Partial Class Task
     End Sub
 
     Private Partial Sub OnProjectIdChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Finished() As Global.System.Boolean
+        Get
+            Return _Finished
+        End Get
+        Set
+            OnFinishedChanging(value)
+            ReportPropertyChanging("Finished")
+            _Finished = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("Finished")
+            OnFinishedChanged()
+        End Set
+    End Property
+
+    Private _Finished As Global.System.Boolean
+    Private Partial Sub OnFinishedChanging(value As Global.System.Boolean)
+    End Sub
+
+    Private Partial Sub OnFinishedChanged()
     End Sub
 
     #End Region

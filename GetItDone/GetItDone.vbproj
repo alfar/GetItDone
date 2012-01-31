@@ -234,6 +234,7 @@
     <Content Include="Views\Task\Assign.vbhtml" />
     <Content Include="Views\Home\Stuff.Mobile.vbhtml" />
     <Content Include="Views\Shared\_Layout.Mobile.vbhtml" />
+    <Content Include="Views\Task\Finish.vbhtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
