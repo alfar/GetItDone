@@ -47,6 +47,7 @@
         </ObjectGroup>
       </Objects>
     </PublishDatabaseSettings>
+    <PublishDatabases>false</PublishDatabases>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -235,6 +236,7 @@
     <Content Include="Views\Home\Stuff.Mobile.vbhtml" />
     <Content Include="Views\Shared\_Layout.Mobile.vbhtml" />
     <Content Include="Views\Task\Finish.vbhtml" />
+    <Content Include="Views\Shared\_CreateStuff.vbhtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
