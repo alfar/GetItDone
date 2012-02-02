@@ -27,6 +27,27 @@
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>GetItDone.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <ExcludeApp_Data>true</ExcludeApp_Data>
+    <DeployIisAppPath>GetItDone</DeployIisAppPath>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="ApplicationServices-Deployment" Order="1">
+          <Destination Path="Data Source=(local)%3bInitial Catalog=GetItDone%3bIntegrated Security=True%3bApplication Name=GetItDone" />
+          <Object Type="dbFullSql" Enabled="False">
+            <PreSource Path="Data Source=(local)%3bInitial Catalog=GetItDone%3bIntegrated Security=True%3bApplication Name=GetItDone" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Debug\AutoScripts\ApplicationServices-Deployment_SchemaOnly.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+        <ObjectGroup Name="TaskModelContainer-Deployment" Order="2">
+          <Destination Path="" />
+          <Object Type="dbFullSql">
+            <PreSource Path="Data Source=(local)%3bInitial Catalog=GetItDone%3bUser ID=GetItDoneWeb%3bPassword=gidw%3bApplication Name=GetItDone" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Debug\AutoScripts\TaskModelContainer-Deployment_SchemaOnly.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
+    <PublishDatabases>false</PublishDatabases>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,6 +57,10 @@
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>GetItDone.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DeployIisAppPath>GetItDone</DeployIisAppPath>
+    <PublishDatabases>false</PublishDatabases>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+    <ExcludeApp_Data>true</ExcludeApp_Data>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
@@ -211,6 +236,7 @@
     <Content Include="Views\Home\Stuff.Mobile.vbhtml" />
     <Content Include="Views\Shared\_Layout.Mobile.vbhtml" />
     <Content Include="Views\Task\Finish.vbhtml" />
+    <Content Include="Views\Shared\_CreateStuff.vbhtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
