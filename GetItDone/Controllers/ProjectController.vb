@@ -11,6 +11,10 @@
             Return View(service.GetProjectsForUser())
         End Function
 
+        Function Future() As ActionResult
+            Return View(service.GetFutureProjectsForUser())
+        End Function
+
         '
         ' GET: /Project/Details/5
 

@@ -111,5 +111,23 @@
 
             Return RedirectToAction("Index")
         End Function
+
+        Function Calendar(id As Integer) As ActionResult
+            Dim t As TaskModel = taskservice.GetTaskForUser(id)
+            Return View(New CalendarTaskModel With {.Id = t.Id, .Title = t.Title, .Notes = t.Notes})
+        End Function
+
+        <HttpPost()>
+        Function Calendar(task As CalendarTaskModel) As ActionResult
+            If ModelState.IsValid Then
+                taskservice.PutInCalendar(task)
+            End If
+
+            Return RedirectToAction("Process")
+        End Function
+
+        Function Completed() As ActionResult
+            Return View(taskservice.GetFinishedTasksForUser())
+        End Function
     End Class
 End Namespace

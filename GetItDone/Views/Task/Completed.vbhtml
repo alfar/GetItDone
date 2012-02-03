@@ -1,10 +1,10 @@
-﻿@ModelType IEnumerable(Of GetItDone.ProjectModel)
+﻿@ModelType IEnumerable(Of GetItDone.TaskListModel)
 
 @Code
-    ViewData("Title") = "Projects"
+    ViewData("Title") = "Completed"
 End Code
 
-<h2>Projects</h2>
+<h2>Completed</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -12,7 +12,7 @@ End Code
 <table>
     <tr>
         <th>
-            Name
+            Title
         </th>
         <th></th>
     </tr>
@@ -21,7 +21,7 @@ End Code
     Dim currentItem = item
     @<tr>
         <td>
-            @Html.DisplayFor(Function(modelItem) currentItem.Name)
+            @Html.DisplayFor(Function(modelItem) currentItem.Title)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", New With {.id = currentItem.Id}) |

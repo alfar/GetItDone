@@ -131,6 +131,7 @@
     <Compile Include="Controllers\ContextController.vb" />
     <Compile Include="Controllers\ProfileController.vb" />
     <Compile Include="Controllers\ProjectController.vb" />
+    <Compile Include="Controllers\ReviewController.vb" />
     <Compile Include="Controllers\TaskController.vb" />
     <Compile Include="DAL\TaskModel.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -237,6 +238,12 @@
     <Content Include="Views\Home\Stuff.Mobile.vbhtml" />
     <Content Include="Views\Shared\_Layout.Mobile.vbhtml" />
     <Content Include="Views\Task\Finish.vbhtml" />
+    <Content Include="Views\Review\Index.vbhtml" />
+    <Content Include="Views\Task\Calendar.vbhtml" />
+    <Content Include="Views\Shared\EditorTemplates\DateTime.vbhtml" />
+    <Content Include="Views\Review\Calendar.vbhtml" />
+    <Content Include="Views\Project\Future.vbhtml" />
+    <Content Include="Views\Task\Completed.vbhtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

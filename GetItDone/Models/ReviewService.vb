@@ -31,4 +31,9 @@ Public Class ReviewService
                                      .UnactionableProjects = _projectService.GetEmptyProjectsForUser(),
                                      .WaitingForPeople = From p In _model.People Where p.OwnerId = member.ProviderUserKey And p.UserId <> p.OwnerId Select New WaitingForReviewModel With {.Name = p.Name, .Tasks = (From t In p.Task Select New TaskListModel() With {.Id = t.Id, .Title = t.Title})}}
     End Function
+
+    Function GetCalendarForUser() As IQueryable(Of CalendarTaskModel)
+        Dim member As MembershipUser = Membership.GetUser()
+        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.DueDate.HasValue Order By t.DueDate Select New CalendarTaskModel With {.Id = t.Id, .Title = t.Title, .DueDate = t.DueDate}
+    End Function
 End Class

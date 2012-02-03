@@ -21,12 +21,17 @@ Public Class ProjectService
 
     Public Function GetProjectsForUser() As IQueryable(Of ProjectModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey Select New ProjectModel With {.Id = p.Id, .Name = p.Name}
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future Select New ProjectModel With {.Id = p.Id, .Name = p.Name}
+    End Function
+
+    Public Function GetFutureProjectsForUser() As IQueryable(Of ProjectModel)
+        Dim member As MembershipUser = Membership.GetUser()
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Future Select New ProjectModel With {.Id = p.Id, .Name = p.Name}
     End Function
 
     Public Function GetEmptyProjectsForUser() As IQueryable(Of ProjectModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Tasks.Any() Select New ProjectModel With {.Id = p.Id, .Name = p.Name}
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Tasks.Any() Select New ProjectModel With {.Id = p.Id, .Name = p.Name}
     End Function
 
     Public Function CreateProject(name As String) As ProjectModel

@@ -16,7 +16,7 @@ Imports System.ComponentModel
 Imports System.Xml.Serialization
 Imports System.Runtime.Serialization
 
-<Assembly: EdmSchemaAttribute("f197111c-6022-47ed-a68e-dfad235866c0")>
+<Assembly: EdmSchemaAttribute("cb2cafad-e292-4be8-a23b-27d2a24c6c27")>
 #Region "EDM Relationship Metadata"
 <Assembly: EdmRelationshipAttribute("TaskModel", "TaskAssignment", "Person", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Person), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
 <Assembly: EdmRelationshipAttribute("TaskModel", "ContextTask", "Context", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Context), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
@@ -491,11 +491,13 @@ Public Partial Class Project
     ''' <param name="id">Initial value of the Id property.</param>
     ''' <param name="name">Initial value of the Name property.</param>
     ''' <param name="ownerId">Initial value of the OwnerId property.</param>
-    Public Shared Function CreateProject(id As Global.System.Int32, name As Global.System.String, ownerId As Global.System.Guid) As Project
+    ''' <param name="future">Initial value of the Future property.</param>
+    Public Shared Function CreateProject(id As Global.System.Int32, name As Global.System.String, ownerId As Global.System.Guid, future As Global.System.Boolean) As Project
         Dim project as Project = New Project
         project.Id = id
         project.Name = name
         project.OwnerId = ownerId
+        project.Future = future
         Return project
     End Function
 
@@ -577,6 +579,31 @@ Public Partial Class Project
     End Sub
 
     Private Partial Sub OnOwnerIdChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Future() As Global.System.Boolean
+        Get
+            Return _Future
+        End Get
+        Set
+            OnFutureChanging(value)
+            ReportPropertyChanging("Future")
+            _Future = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("Future")
+            OnFutureChanged()
+        End Set
+    End Property
+
+    Private _Future As Global.System.Boolean
+    Private Partial Sub OnFutureChanging(value As Global.System.Boolean)
+    End Sub
+
+    Private Partial Sub OnFutureChanged()
     End Sub
 
     #End Region
@@ -834,6 +861,31 @@ Public Partial Class Task
     End Sub
 
     Private Partial Sub OnFinishedChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property DueDate() As Nullable(Of Global.System.DateTime)
+        Get
+            Return _DueDate
+        End Get
+        Set
+            OnDueDateChanging(value)
+            ReportPropertyChanging("DueDate")
+            _DueDate = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("DueDate")
+            OnDueDateChanged()
+        End Set
+    End Property
+
+    Private _DueDate As Nullable(Of Global.System.DateTime)
+    Private Partial Sub OnDueDateChanging(value As Nullable(Of Global.System.DateTime))
+    End Sub
+
+    Private Partial Sub OnDueDateChanged()
     End Sub
 
     #End Region

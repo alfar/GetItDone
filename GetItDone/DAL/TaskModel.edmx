@@ -48,6 +48,7 @@
           <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
           <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Future" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Tasks">
           <Key>
@@ -61,6 +62,7 @@
           <Property Name="ContextId" Type="int" />
           <Property Name="ProjectId" Type="int" />
           <Property Name="Finished" Type="bit" Nullable="false" />
+          <Property Name="DueDate" Type="datetime" />
         </EntityType>
         <Association Name="FK_ContextTask">
           <End Role="Contexts" Type="TaskModel.Store.Contexts" Multiplicity="0..1" />
@@ -146,6 +148,7 @@
           <NavigationProperty Name="Project" Relationship="TaskModel.ProjectTask" FromRole="Task" ToRole="Project" />
           <Property Type="Int32" Name="ProjectId" Nullable="true" />
           <Property Type="Boolean" Name="Finished" Nullable="false" />
+          <Property Type="DateTime" Name="DueDate" />
         </EntityType>
         <Association Name="TaskAssignment">
           <End Type="TaskModel.Person" Role="Person" Multiplicity="0..1" />
@@ -188,6 +191,7 @@
           <Property Type="String" Name="Name" Nullable="false" />
           <Property Type="Guid" Name="OwnerId" Nullable="false" />
           <NavigationProperty Name="Tasks" Relationship="TaskModel.ProjectTask" FromRole="Project" ToRole="Task" />
+          <Property Type="Boolean" Name="Future" Nullable="false" />
         </EntityType>
         <Association Name="ProjectTask">
           <End Type="TaskModel.Project" Role="Project" Multiplicity="0..1" />
@@ -210,25 +214,26 @@
     <EntitySetMapping Name="People">
       <EntityTypeMapping TypeName="IsTypeOf(TaskModel.Person)">
         <MappingFragment StoreEntitySet="People">
-          <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Email" ColumnName="Email" />
           <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="Tasks">
       <EntityTypeMapping TypeName="IsTypeOf(TaskModel.Task)">
         <MappingFragment StoreEntitySet="Tasks">
-          <ScalarProperty Name="Finished" ColumnName="Finished" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Title" ColumnName="Title" />
           <ScalarProperty Name="Notes" ColumnName="Notes" />
           <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
           <ScalarProperty Name="AssignedToId" ColumnName="AssignedToId" />
           <ScalarProperty Name="ContextId" ColumnName="ContextId" />
           <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+          <ScalarProperty Name="Finished" ColumnName="Finished" />
+          <ScalarProperty Name="DueDate" ColumnName="DueDate" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -244,7 +249,8 @@
     <EntitySetMapping Name="Projects">
       <EntityTypeMapping TypeName="IsTypeOf(TaskModel.Project)">
         <MappingFragment StoreEntitySet="Projects">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Future" ColumnName="Future" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
         </MappingFragment>

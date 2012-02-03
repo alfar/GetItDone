@@ -1,10 +1,10 @@
 ﻿@ModelType IEnumerable(Of GetItDone.ProjectModel)
 
 @Code
-    ViewData("Title") = "Projects"
+    ViewData("Title") = "Some day/Maybe"
 End Code
 
-<h2>Projects</h2>
+<h2>Some day/Maybe</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")

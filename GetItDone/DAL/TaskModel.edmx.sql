@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 01/15/2012 13:29:36
+-- Date Created: 02/03/2012 22:30:48
 -- Generated from EDMX file: C:\Code\GetItDone\GetItDone\DAL\TaskModel.edmx
 -- --------------------------------------------------
 
@@ -17,25 +17,31 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_TaskAssignment]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Tasks] DROP CONSTRAINT [FK_TaskAssignment];
-GO
 IF OBJECT_ID(N'[dbo].[FK_ContextTask]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Tasks] DROP CONSTRAINT [FK_ContextTask];
+GO
+IF OBJECT_ID(N'[dbo].[FK_ProjectTask]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Tasks] DROP CONSTRAINT [FK_ProjectTask];
+GO
+IF OBJECT_ID(N'[dbo].[FK_TaskAssignment]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Tasks] DROP CONSTRAINT [FK_TaskAssignment];
 GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
 -- --------------------------------------------------
 
+IF OBJECT_ID(N'[dbo].[Contexts]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Contexts];
+GO
 IF OBJECT_ID(N'[dbo].[People]', 'U') IS NOT NULL
     DROP TABLE [dbo].[People];
 GO
+IF OBJECT_ID(N'[dbo].[Projects]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Projects];
+GO
 IF OBJECT_ID(N'[dbo].[Tasks]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Tasks];
-GO
-IF OBJECT_ID(N'[dbo].[Contexts]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[Contexts];
 GO
 
 -- --------------------------------------------------
@@ -47,7 +53,8 @@ CREATE TABLE [dbo].[People] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [Name] nvarchar(max)  NOT NULL,
     [Email] nvarchar(max)  NOT NULL,
-    [UserId] uniqueidentifier  NOT NULL
+    [UserId] uniqueidentifier  NOT NULL,
+    [OwnerId] uniqueidentifier  NOT NULL
 );
 GO
 
@@ -57,9 +64,11 @@ CREATE TABLE [dbo].[Tasks] (
     [Title] nvarchar(max)  NOT NULL,
     [Notes] nvarchar(max)  NOT NULL,
     [OwnerId] uniqueidentifier  NOT NULL,
-    [AssignedToId] int  NOT NULL,
+    [AssignedToId] int  NULL,
     [ContextId] int  NULL,
-    [ProjectId] int  NULL
+    [ProjectId] int  NULL,
+    [Finished] bit  NOT NULL,
+    [DueDate] datetime  NULL
 );
 GO
 
