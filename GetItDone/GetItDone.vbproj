@@ -220,6 +220,7 @@
     <Content Include="DAL\TaskModel.edmx.sql" />
     <Content Include="packages.config" />
     <Content Include="Views\Profile\Index.vbhtml" />
+    <Content Include="Views\Shared\_CreateStuff.vbhtml" />
     <Content Include="Views\Task\Index.vbhtml" />
     <Content Include="Views\Task\Create.vbhtml" />
     <Content Include="Views\Task\_Create.vbhtml.vbhtml" />
@@ -236,7 +237,6 @@
     <Content Include="Views\Home\Stuff.Mobile.vbhtml" />
     <Content Include="Views\Shared\_Layout.Mobile.vbhtml" />
     <Content Include="Views\Task\Finish.vbhtml" />
-    <Content Include="Views\Shared\_CreateStuff.vbhtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

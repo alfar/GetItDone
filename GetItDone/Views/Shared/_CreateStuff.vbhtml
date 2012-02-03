@@ -8,7 +8,6 @@ End Using
 
 <script type="text/javascript">
     function clearTitle(model) {
-        $('#Title').val('').focus();
-
+        $('#Title').val('@Model.Title').focus();
     }
 </script>
