@@ -16,7 +16,7 @@ Imports System.ComponentModel
 Imports System.Xml.Serialization
 Imports System.Runtime.Serialization
 
-<Assembly: EdmSchemaAttribute("cb2cafad-e292-4be8-a23b-27d2a24c6c27")>
+<Assembly: EdmSchemaAttribute("d35d9e6d-bb22-4fc6-899c-6f364cb3db92")>
 #Region "EDM Relationship Metadata"
 <Assembly: EdmRelationshipAttribute("TaskModel", "TaskAssignment", "Person", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Person), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
 <Assembly: EdmRelationshipAttribute("TaskModel", "ContextTask", "Context", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Context), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
@@ -604,6 +604,131 @@ Public Partial Class Project
     End Sub
 
     Private Partial Sub OnFutureChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property Purpose() As Global.System.String
+        Get
+            Return _Purpose
+        End Get
+        Set
+            OnPurposeChanging(value)
+            ReportPropertyChanging("Purpose")
+            _Purpose = StructuralObject.SetValidValue(value, true)
+            ReportPropertyChanged("Purpose")
+            OnPurposeChanged()
+        End Set
+    End Property
+
+    Private _Purpose As Global.System.String
+    Private Partial Sub OnPurposeChanging(value As Global.System.String)
+    End Sub
+
+    Private Partial Sub OnPurposeChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property Principles() As Global.System.String
+        Get
+            Return _Principles
+        End Get
+        Set
+            OnPrinciplesChanging(value)
+            ReportPropertyChanging("Principles")
+            _Principles = StructuralObject.SetValidValue(value, true)
+            ReportPropertyChanged("Principles")
+            OnPrinciplesChanged()
+        End Set
+    End Property
+
+    Private _Principles As Global.System.String
+    Private Partial Sub OnPrinciplesChanging(value As Global.System.String)
+    End Sub
+
+    Private Partial Sub OnPrinciplesChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property Vision() As Global.System.String
+        Get
+            Return _Vision
+        End Get
+        Set
+            OnVisionChanging(value)
+            ReportPropertyChanging("Vision")
+            _Vision = StructuralObject.SetValidValue(value, true)
+            ReportPropertyChanged("Vision")
+            OnVisionChanged()
+        End Set
+    End Property
+
+    Private _Vision As Global.System.String
+    Private Partial Sub OnVisionChanging(value As Global.System.String)
+    End Sub
+
+    Private Partial Sub OnVisionChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property Brainstorm() As Global.System.String
+        Get
+            Return _Brainstorm
+        End Get
+        Set
+            OnBrainstormChanging(value)
+            ReportPropertyChanging("Brainstorm")
+            _Brainstorm = StructuralObject.SetValidValue(value, true)
+            ReportPropertyChanged("Brainstorm")
+            OnBrainstormChanged()
+        End Set
+    End Property
+
+    Private _Brainstorm As Global.System.String
+    Private Partial Sub OnBrainstormChanging(value As Global.System.String)
+    End Sub
+
+    Private Partial Sub OnBrainstormChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property Organization() As Global.System.String
+        Get
+            Return _Organization
+        End Get
+        Set
+            OnOrganizationChanging(value)
+            ReportPropertyChanging("Organization")
+            _Organization = StructuralObject.SetValidValue(value, true)
+            ReportPropertyChanged("Organization")
+            OnOrganizationChanged()
+        End Set
+    End Property
+
+    Private _Organization As Global.System.String
+    Private Partial Sub OnOrganizationChanging(value As Global.System.String)
+    End Sub
+
+    Private Partial Sub OnOrganizationChanged()
     End Sub
 
     #End Region

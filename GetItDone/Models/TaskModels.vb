@@ -5,6 +5,7 @@ Imports System.Globalization
 Public Class TaskModel
     Public Property Id As Integer
     Public Property Title As String
+    <UIHint("MultilineText")>
     Public Property Notes As String
 End Class
 
@@ -24,7 +25,10 @@ End Class
 
 Public Class AssignTaskModel
     Public Property Id As Integer
+    <Required()> _
     Public Property Title As String
+
+    <UIHint("MultilineText")>
     Public Property Notes As String
     Public Property AssignToId As Integer
     Public Property AssignToName As String
@@ -32,10 +36,13 @@ End Class
 
 Public Class CalendarTaskModel
     Public Property Id As Integer
+    <Required()> _
     Public Property Title As String
 
+    <UIHint("MultilineText")>
     Public Property Notes As String
 
+    <Required()> _
     Public Property DueDate As DateTime
 End Class
 

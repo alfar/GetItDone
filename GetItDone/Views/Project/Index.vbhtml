@@ -1,4 +1,4 @@
-﻿@ModelType IEnumerable(Of GetItDone.ProjectModel)
+﻿@ModelType IEnumerable(Of GetItDone.ProjectListModel)
 
 @Code
     ViewData("Title") = "Projects"
@@ -19,7 +19,7 @@ End Code
 
 @For Each item In Model
     Dim currentItem = item
-    @<tr>
+    @<tr class="project">
         <td>
             @Html.DisplayFor(Function(modelItem) currentItem.Name)
         </td>
@@ -29,6 +29,12 @@ End Code
             @Html.ActionLink("Delete", "Delete", New With {.id = currentItem.Id})
         </td>
     </tr>
+    For Each task In item.NextActions
+    @<tr class="task">
+        <td>@task.Title</td>
+        <td></td>
+    </tr>
+    Next
 Next
 
 </table>

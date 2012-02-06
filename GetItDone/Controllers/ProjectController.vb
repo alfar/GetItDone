@@ -19,7 +19,7 @@
         ' GET: /Project/Details/5
 
         Function Details(ByVal id As Integer) As ActionResult
-            Return View()
+            Return View(service.GetProjectForUser(id))
         End Function
 
         '
@@ -50,21 +50,24 @@
         ' GET: /Project/Edit/5
 
         Function Edit(ByVal id As Integer) As ActionResult
-            Return View()
+            Return View(service.GetProjectForUser(id))
         End Function
 
         '
         ' POST: /Project/Edit/5
 
-        <HttpPost> _
-        Function Edit(ByVal id As Integer, ByVal collection As FormCollection) As ActionResult
+        <HttpPost()> _
+        Function Edit(ByVal id As Integer, data As ProjectDetailModel) As ActionResult
             Try
-                ' TODO: Add update logic here
+                If ModelState.IsValid Then
+                    service.UpdateProject(id, data)
 
-                Return RedirectToAction("Index")
+                    Return RedirectToAction("Index")
+                End If
             Catch
-                Return View()
             End Try
+
+            Return View(service.GetProjectForUser(id))
         End Function
 
         '

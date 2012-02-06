@@ -5,102 +5,107 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="TaskModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
-        <EntityContainer Name="TaskModelStoreContainer">
-          <EntitySet Name="Contexts" EntityType="TaskModel.Store.Contexts" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="People" EntityType="TaskModel.Store.People" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Projects" EntityType="TaskModel.Store.Projects" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Tasks" EntityType="TaskModel.Store.Tasks" store:Type="Tables" Schema="dbo" />
-          <AssociationSet Name="FK_ContextTask" Association="TaskModel.Store.FK_ContextTask">
-            <End Role="Contexts" EntitySet="Contexts" />
-            <End Role="Tasks" EntitySet="Tasks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ProjectTask" Association="TaskModel.Store.FK_ProjectTask">
-            <End Role="Projects" EntitySet="Projects" />
-            <End Role="Tasks" EntitySet="Tasks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TaskAssignment" Association="TaskModel.Store.FK_TaskAssignment">
-            <End Role="People" EntitySet="People" />
-            <End Role="Tasks" EntitySet="Tasks" />
-          </AssociationSet>
-        </EntityContainer>
-        <EntityType Name="Contexts">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
-        </EntityType>
-        <EntityType Name="People">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Email" Type="nvarchar(max)" />
-          <Property Name="UserId" Type="uniqueidentifier" />
-          <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Projects">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Future" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Tasks">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Notes" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="AssignedToId" Type="int" />
-          <Property Name="ContextId" Type="int" />
-          <Property Name="ProjectId" Type="int" />
-          <Property Name="Finished" Type="bit" Nullable="false" />
-          <Property Name="DueDate" Type="datetime" />
-        </EntityType>
-        <Association Name="FK_ContextTask">
-          <End Role="Contexts" Type="TaskModel.Store.Contexts" Multiplicity="0..1" />
-          <End Role="Tasks" Type="TaskModel.Store.Tasks" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Contexts">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Tasks">
-              <PropertyRef Name="ContextId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ProjectTask">
-          <End Role="Projects" Type="TaskModel.Store.Projects" Multiplicity="0..1" />
-          <End Role="Tasks" Type="TaskModel.Store.Tasks" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Projects">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Tasks">
-              <PropertyRef Name="ProjectId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TaskAssignment">
-          <End Role="People" Type="TaskModel.Store.People" Multiplicity="0..1" />
-          <End Role="Tasks" Type="TaskModel.Store.Tasks" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="People">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Tasks">
-              <PropertyRef Name="AssignedToId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-      </Schema></edmx:StorageModels>
+  <EntityContainer Name="TaskModelStoreContainer">
+    <EntitySet Name="People" EntityType="TaskModel.Store.People" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Tasks" EntityType="TaskModel.Store.Tasks" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Contexts" EntityType="TaskModel.Store.Contexts" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Projects" EntityType="TaskModel.Store.Projects" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="TaskAssignment" Association="TaskModel.Store.TaskAssignment">
+      <End Role="Person" EntitySet="People" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="ContextTask" Association="TaskModel.Store.ContextTask">
+      <End Role="Context" EntitySet="Contexts" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="ProjectTask" Association="TaskModel.Store.ProjectTask">
+      <End Role="Project" EntitySet="Projects" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="People">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Tasks">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Notes" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="AssignedToId" Type="int" Nullable="true" />
+    <Property Name="ContextId" Type="int" Nullable="true" />
+    <Property Name="ProjectId" Type="int" Nullable="true" />
+    <Property Name="Finished" Type="bit" Nullable="false" />
+    <Property Name="DueDate" Type="datetime" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Contexts">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Projects">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Future" Type="bit" Nullable="false" />
+    <Property Name="Purpose" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Principles" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Vision" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Brainstorm" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Organization" Type="nvarchar(max)" Nullable="true" />
+  </EntityType>
+  <Association Name="TaskAssignment">
+    <End Role="Person" Type="TaskModel.Store.People" Multiplicity="0..1" />
+    <End Role="Task" Type="TaskModel.Store.Tasks" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Person">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="AssignedToId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="ContextTask">
+    <End Role="Context" Type="TaskModel.Store.Contexts" Multiplicity="0..1" />
+    <End Role="Task" Type="TaskModel.Store.Tasks" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Context">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="ContextId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="ProjectTask">
+    <End Role="Project" Type="TaskModel.Store.Projects" Multiplicity="0..1" />
+    <End Role="Task" Type="TaskModel.Store.Tasks" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Project">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="ProjectId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="TaskModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
@@ -192,6 +197,11 @@
           <Property Type="Guid" Name="OwnerId" Nullable="false" />
           <NavigationProperty Name="Tasks" Relationship="TaskModel.ProjectTask" FromRole="Project" ToRole="Task" />
           <Property Type="Boolean" Name="Future" Nullable="false" />
+          <Property Type="String" Name="Purpose" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Principles" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Vision" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Brainstorm" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Organization" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="ProjectTask">
           <End Type="TaskModel.Project" Role="Project" Multiplicity="0..1" />
@@ -249,10 +259,15 @@
     <EntitySetMapping Name="Projects">
       <EntityTypeMapping TypeName="IsTypeOf(TaskModel.Project)">
         <MappingFragment StoreEntitySet="Projects">
-          <ScalarProperty Name="Future" ColumnName="Future" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+          <ScalarProperty Name="Future" ColumnName="Future" />
+          <ScalarProperty Name="Purpose" ColumnName="Purpose" />
+          <ScalarProperty Name="Principles" ColumnName="Principles" />
+          <ScalarProperty Name="Vision" ColumnName="Vision" />
+          <ScalarProperty Name="Brainstorm" ColumnName="Brainstorm" />
+          <ScalarProperty Name="Organization" ColumnName="Organization" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

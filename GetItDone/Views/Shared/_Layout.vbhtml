@@ -24,15 +24,12 @@
             </div>
             <div id="menucontainer">
                 <ul id="menu">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Collect", "Stuff", "Home")</li>
                     <li>@Html.ActionLink("Process", "Process", "Task")</li>
                     <li>@Html.ActionLink("Do", "Index", "Task")</li>
                     <li>@Html.ActionLink("Review", "Index", "Review")</li>
                     <li>@Html.ActionLink("Calendar", "Calendar", "Review")</li>
-                    <li>@Html.ActionLink("My profile", "Index", "Profile")</li>
                     <li>@Html.ActionLink("Projects", "Index", "Project")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
                 </ul>
             </div>
         </div>

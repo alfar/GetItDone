@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 02/03/2012 22:30:48
+-- Date Created: 02/06/2012 20:23:36
 -- Generated from EDMX file: C:\Code\GetItDone\GetItDone\DAL\TaskModel.edmx
 -- --------------------------------------------------
 
@@ -84,7 +84,13 @@ GO
 CREATE TABLE [dbo].[Projects] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [Name] nvarchar(max)  NOT NULL,
-    [OwnerId] uniqueidentifier  NOT NULL
+    [OwnerId] uniqueidentifier  NOT NULL,
+    [Future] bit  NOT NULL,
+    [Purpose] nvarchar(max)  NULL,
+    [Principles] nvarchar(max)  NULL,
+    [Vision] nvarchar(max)  NULL,
+    [Brainstorm] nvarchar(max)  NULL,
+    [Organization] nvarchar(max)  NULL
 );
 GO
 

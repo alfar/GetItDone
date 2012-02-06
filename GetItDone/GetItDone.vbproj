@@ -66,6 +66,10 @@
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.4.1.10331.0\lib\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="MarkdownSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Components\MarkdownSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -141,6 +145,7 @@
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\MarkdownExtension.vb" />
     <Compile Include="Helpers\MobileCapableRazorViewEngine.vb" />
     <Compile Include="Helpers\MobileCapableWebFormViewEngine.vb" />
     <Compile Include="Models\ContextModels.vb" />
@@ -244,6 +249,8 @@
     <Content Include="Views\Review\Calendar.vbhtml" />
     <Content Include="Views\Project\Future.vbhtml" />
     <Content Include="Views\Task\Completed.vbhtml" />
+    <Content Include="Views\Project\Details.vbhtml" />
+    <Content Include="Views\Project\Edit.vbhtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
