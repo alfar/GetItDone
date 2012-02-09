@@ -1,10 +1,11 @@
-﻿@ModelType GetItDone.CreateContextModel
+﻿
+@ModelType GetItDone.ContextModel
 
 @Code
-    ViewData("Title") = "Create"
+    ViewData("Title") = "Edit"
 End Code
 
-<h2>Create</h2>
+<h2>Edit</h2>
 
 <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
@@ -12,7 +13,9 @@ End Code
 @Using Html.BeginForm()
     @Html.ValidationSummary(True)
     @<fieldset>
-        <legend>Create Context</legend>
+        <legend>Context</legend>
+
+        @Html.HiddenFor(Function(model) model.Id)
 
         <div class="editor-label">
             @Html.LabelFor(Function(model) model.Name)
@@ -23,7 +26,7 @@ End Code
         </div>
 
         <p>
-            <input type="submit" value="Create" />
+            <input type="submit" value="Save" />
         </p>
     </fieldset>
 End Using

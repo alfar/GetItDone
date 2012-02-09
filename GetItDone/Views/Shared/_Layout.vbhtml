@@ -17,7 +17,7 @@
     <div class="page">
         <div id="header">
             <div id="title">
-                <h1>Get it done!</h1>
+                <h1>@Html.ActionLink("Get To Done!", "Index", "Home", New Object(), New Object())</h1>
             </div>
             <div id="logindisplay">
                 @Html.Partial("_LogOnPartial")
@@ -30,6 +30,7 @@
                     <li>@Html.ActionLink("Review", "Index", "Review")</li>
                     <li>@Html.ActionLink("Calendar", "Calendar", "Review")</li>
                     <li>@Html.ActionLink("Projects", "Index", "Project")</li>
+                    <li>@Html.ActionLink("Contexts", "Index", "Context")</li>
                 </ul>
             </div>
         </div>

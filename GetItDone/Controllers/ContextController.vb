@@ -16,47 +16,50 @@
         ' GET: /Context/Details/5
 
         Function Details(ByVal id As Integer) As ActionResult
-            Return View()
+            Return View(service.GetContextForUser(id))
         End Function
 
         '
         ' GET: /Context/Create
 
         Function Create() As ActionResult
-            Return PartialView()
+            Return View()
         End Function
 
         '
         ' POST: /Context/Create
 
         <HttpPost()> _
-        Function Create(TaskId As Integer, model As CreateContextModel) As ActionResult
-            Try
-                ViewBag.TaskId = TaskId
-                Return PartialView("ListItem", service.CreateContext(model.Name))
-            Catch
+        Function Create(model As CreateContextModel) As ActionResult
+            If ModelState.IsValid Then
+                service.CreateContext(model.Name)
+                Return RedirectToAction("Index")
+            Else
                 Return View()
-            End Try
+
+            End If
         End Function
 
         '
         ' GET: /Context/Edit/5
 
         Function Edit(ByVal id As Integer) As ActionResult
-            Return View()
+            Return View(service.GetContextForUser(id))
         End Function
 
         '
         ' POST: /Context/Edit/5
 
         <HttpPost()> _
-        Function Edit(ByVal id As Integer, ByVal collection As FormCollection) As ActionResult
+        Function Edit(ctx As ContextModel) As ActionResult
             Try
-                ' TODO: Add update logic here
+                If ModelState.IsValid Then
+                    service.UpdateContext(ctx)
+                End If
 
                 Return RedirectToAction("Index")
             Catch
-                Return View()
+                Return View(ctx)
             End Try
         End Function
 
@@ -64,7 +67,7 @@
         ' GET: /Context/Delete/5
 
         Function Delete(ByVal id As Integer) As ActionResult
-            Return View()
+            Return View(service.GetContextForUser(id))
         End Function
 
         '
@@ -73,11 +76,11 @@
         <HttpPost()> _
         Function Delete(ByVal id As Integer, ByVal collection As FormCollection) As ActionResult
             Try
-                ' TODO: Add delete logic here
+                service.DeleteContext(id)
 
                 Return RedirectToAction("Index")
             Catch
-                Return View()
+                Return View(service.GetContextForUser(id))
             End Try
         End Function
     End Class

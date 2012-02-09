@@ -229,12 +229,10 @@
     <Content Include="Views\Shared\_CreateStuff.vbhtml" />
     <Content Include="Views\Task\Index.vbhtml" />
     <Content Include="Views\Task\Create.vbhtml" />
-    <Content Include="Views\Task\_Create.vbhtml.vbhtml" />
     <Content Include="Views\Home\Stuff.vbhtml" />
     <Content Include="Views\Home\EditorTemplates\BigText.vbhtml" />
     <Content Include="Views\Task\Process.vbhtml" />
     <Content Include="Views\Task\NothingToProcess.vbhtml" />
-    <Content Include="Views\Context\Create.vbhtml" />
     <Content Include="Views\Context\ListItem.vbhtml" />
     <Content Include="Views\Context\Index.vbhtml" />
     <Content Include="Views\Project\Index.vbhtml" />
@@ -251,6 +249,10 @@
     <Content Include="Views\Task\Completed.vbhtml" />
     <Content Include="Views\Project\Details.vbhtml" />
     <Content Include="Views\Project\Edit.vbhtml" />
+    <Content Include="Views\Context\Edit.vbhtml" />
+    <Content Include="Views\Context\Details.vbhtml" />
+    <Content Include="Views\Context\Delete.vbhtml" />
+    <Content Include="Views\Context\Create.vbhtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

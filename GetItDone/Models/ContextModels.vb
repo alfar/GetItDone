@@ -1,5 +1,15 @@
-﻿Public Class ContextListModel
+﻿Imports System.ComponentModel
+Imports System.ComponentModel.DataAnnotations
+Imports System.Globalization
+
+Public Class ContextListModel
     Public Property Id As Integer
+    Public Property Name As String
+End Class
+
+Public Class ContextModel
+    Public Property Id As Integer
+    <Required()>
     Public Property Name As String
 End Class
 
@@ -10,6 +20,7 @@ Public Class ContextReviewModel
 End Class
 
 Public Class CreateContextModel
+    <Required()>
     Public Property Name As String
 End Class
 
@@ -19,6 +30,12 @@ Public Class ContextService
     Public Sub New(model As TaskModelContainer)
         _model = model
     End Sub
+
+    Public Function GetContextForUser(id As Integer) As ContextModel
+        Dim member As MembershipUser = Membership.GetUser()
+
+        Return (From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey AndAlso c.Id = id Select New ContextModel With {.Id = c.Id, .Name = c.Name}).FirstOrDefault()
+    End Function
 
     Public Function GetContextsForUser() As IQueryable(Of ContextListModel)
         Dim member As MembershipUser = Membership.GetUser()
@@ -42,5 +59,27 @@ Public Class ContextService
 
         Return From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey And c.Tasks.Any() Select New ContextReviewModel With {.Id = c.Id, .Name = c.Name, .Tasks = (From t As Task In c.Tasks Select New TaskListModel() With {.Id = t.Id, .Title = t.Title})}
     End Function
+
+    Public Sub UpdateContext(ctx As ContextModel)
+        Dim member As MembershipUser = Membership.GetUser()
+
+        Dim context As Context = (From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey AndAlso c.Id = ctx.Id).FirstOrDefault
+
+        If context IsNot Nothing Then
+            context.Name = ctx.Name
+            _model.SaveChanges()
+        End If
+    End Sub
+
+    Sub DeleteContext(id As Integer)
+        Dim member As MembershipUser = Membership.GetUser()
+
+        Dim context As Context = (From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey AndAlso c.Id = id).FirstOrDefault
+
+        If context IsNot Nothing Then
+            _model.Contexts.DeleteObject(context)
+            _model.SaveChanges()
+        End If
+    End Sub
 
 End Class
