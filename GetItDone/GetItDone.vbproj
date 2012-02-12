@@ -253,6 +253,7 @@
     <Content Include="Views\Context\Details.vbhtml" />
     <Content Include="Views\Context\Delete.vbhtml" />
     <Content Include="Views\Context\Create.vbhtml" />
+    <Content Include="Views\Project\CreateFromStuff.vbhtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

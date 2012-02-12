@@ -1,4 +1,5 @@
 ﻿Namespace GetItDone
+    <Authorize()>
     Public Class ReviewController
         Inherits System.Web.Mvc.Controller
 

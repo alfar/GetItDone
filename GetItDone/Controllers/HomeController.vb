@@ -5,18 +5,13 @@
     Private reviewservice As New ReviewService(container)
 
     Function Index() As ActionResult
-        ViewData("Message") = "Welcome to ASP.NET MVC!"
+        ViewBag.PeopleCount = Membership.GetAllUsers().Count
         Return View()
     End Function
 
     <Authorize()> _
     Function Stuff() As ActionResult
         Return View()
-    End Function
-
-    <Authorize()> _
-    Function Review() As ActionResult
-        Return View(reviewservice.GetReviewDataForUser())
     End Function
 
     Function About() As ActionResult

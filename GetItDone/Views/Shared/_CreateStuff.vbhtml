@@ -10,4 +10,8 @@ End Using
     function clearTitle(model) {
         $('#Title').val('@Model.Title').focus();
     }
+
+    $(document).ready(function () {
+        $('#Title').autocomplete({source : '@Url.Action("AutoComplete", "Project")'});
+    });
 </script>

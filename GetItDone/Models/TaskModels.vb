@@ -79,13 +79,15 @@ Public Class TaskService
         Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.AssignedTo Is Nothing And contextIds.Contains(t.ContextId) And Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title}
     End Function
 
-    Public Sub CreateTask(title As String, ownerId As Guid)
+    Public Function CreateTask(title As String, ownerId As Guid) As TaskListModel
         Dim ps As New PersonService(_model)
         Dim t As New Task() With {.Title = title, .Notes = "", .OwnerId = ownerId}
 
         _model.Tasks.AddObject(t)
         _model.SaveChanges()
-    End Sub
+
+        Return New TaskListModel() With {.Id = t.Id, .Title = t.Title}
+    End Function
 
     Public Sub DeleteTask(id As Integer)
         Dim ownerId As Guid = Membership.GetUser().ProviderUserKey
@@ -164,5 +166,15 @@ Public Class TaskService
         Dim member As MembershipUser = Membership.GetUser()
         Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title}
     End Function
+
+    Sub UpdateTask(id As Integer, Title As String)
+        Dim member As MembershipUser = Membership.GetUser()
+        Dim task As Task = _model.Tasks.FirstOrDefault(Function(t) t.Id = id AndAlso t.OwnerId = member.ProviderUserKey)
+
+        If task IsNot Nothing Then
+            task.Title = Title
+            _model.SaveChanges()
+        End If
+    End Sub
 
 End Class

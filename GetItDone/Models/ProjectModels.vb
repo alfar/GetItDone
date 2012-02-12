@@ -31,6 +31,11 @@ End Class
 Public Class CreateProjectModel
     <Required()> _
     Public Property Name As String
+
+    <DisplayName("Create next action")>
+    Public Property CreateNextAction As Boolean
+    Public Property NextAction As String
+    Public Property NextActionId As Integer?
 End Class
 
 Public Class ProjectService

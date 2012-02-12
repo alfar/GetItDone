@@ -1,4 +1,5 @@
 ﻿Namespace GetItDone
+    <Authorize()>
     Public Class ProfileController
         Inherits System.Web.Mvc.Controller
 

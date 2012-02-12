@@ -77,6 +77,7 @@
 
         Function CreateProject(id As Integer, project As CreateProjectModel) As ActionResult
             projectservice.CreateProject(project.Name)
+
             taskservice.DeleteTask(id)
             Return RedirectToAction("Process")
         End Function
