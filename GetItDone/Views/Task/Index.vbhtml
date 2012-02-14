@@ -36,6 +36,7 @@ end using
         </td>
         <td>
             @Html.ActionLink("Done!", "Finish", New With {.id = currentItem.Id})
+            @Html.ActionLink("Reprocess", "Reprocess", New With {.id = currentItem.Id})
             @Ajax.ActionLink("Drop it", "Delete", New With {.id = currentItem.Id}, New AjaxOptions With {.HttpMethod = "POST", .Confirm = "Drop it for good?", .OnFailure = "failed", .OnSuccess = "dropTask"})
         </td>
     </tr>

@@ -130,5 +130,10 @@
         Function Completed() As ActionResult
             Return View(taskservice.GetFinishedTasksForUser())
         End Function
+
+        Function Reprocess(id As Integer) As ActionResult
+            taskservice.Reprocess(id)
+            Return RedirectToAction("Process")
+        End Function
     End Class
 End Namespace

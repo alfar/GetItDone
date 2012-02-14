@@ -177,4 +177,14 @@ Public Class TaskService
         End If
     End Sub
 
+    Sub Reprocess(id As Integer)
+        Dim member As MembershipUser = Membership.GetUser()
+        Dim task As Task = _model.Tasks.FirstOrDefault(Function(t) t.Id = id AndAlso t.OwnerId = member.ProviderUserKey)
+
+        If task IsNot Nothing Then
+            task.ContextId = Nothing
+            _model.SaveChanges()
+        End If
+    End Sub
+
 End Class
