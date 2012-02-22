@@ -74,7 +74,7 @@ Public Class ProjectService
 
     Function GetProjectForUser(id As Integer) As ProjectDetailModel
         Dim member As MembershipUser = Membership.GetUser()
-        Return (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id Select New ProjectDetailModel With {.Id = p.Id, .Name = p.Name, .Purpose = p.Purpose, .Principles = p.Principles, .Vision = p.Vision, .Brainstorm = p.Brainstorm, .Organizing = p.Organization, .NextActions = From t In p.Tasks Select New TaskListModel With {.Id = t.Id, .Title = t.Title}}).FirstOrDefault()
+        Return (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id Select New ProjectDetailModel With {.Id = p.Id, .Name = p.Name, .Purpose = p.Purpose, .Principles = p.Principles, .Vision = p.Vision, .Brainstorm = p.Brainstorm, .Organizing = p.Organization, .NextActions = From t In p.Tasks Select New TaskListModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name}}).FirstOrDefault()
     End Function
 
     Sub UpdateProject(id As Integer, data As ProjectDetailModel)

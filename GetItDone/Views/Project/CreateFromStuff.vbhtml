@@ -1,7 +1,7 @@
 ﻿@ModelType GetItDone.CreateProjectModel
 
 @Code
-    ViewData("Title") = "CreateFromStuff"
+    ViewData("Title") = "Create Project"
 End Code
 
 <h2>Create project</h2>

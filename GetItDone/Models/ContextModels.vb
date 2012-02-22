@@ -5,6 +5,7 @@ Imports System.Globalization
 Public Class ContextListModel
     Public Property Id As Integer
     Public Property Name As String
+    Public Property Active As Boolean
 End Class
 
 Public Class ContextModel
@@ -40,7 +41,7 @@ Public Class ContextService
     Public Function GetContextsForUser() As IQueryable(Of ContextListModel)
         Dim member As MembershipUser = Membership.GetUser()
 
-        Return From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey Select New ContextListModel With {.Id = c.Id, .Name = c.Name}
+        Return From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey Select New ContextListModel With {.Id = c.Id, .Name = c.Name, .Active = c.Active}
     End Function
 
     Public Function CreateContext(name As String) As ContextListModel
@@ -80,6 +81,17 @@ Public Class ContextService
             _model.Contexts.DeleteObject(context)
             _model.SaveChanges()
         End If
+    End Sub
+
+    Sub ToggleActiveContexts(contextIds As Integer())
+        Dim member As MembershipUser = Membership.GetUser()
+        Dim ctxs = (From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey)
+
+        For Each c In ctxs
+            c.Active = contextIds.Contains(c.Id)
+        Next
+
+        _model.SaveChanges()
     End Sub
 
 End Class

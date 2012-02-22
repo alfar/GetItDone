@@ -12,6 +12,6 @@ End Using
     }
 
     $(document).ready(function () {
-        $('#Title').autocomplete({source : '@Url.Action("AutoComplete", "Project")'});
+        $('#Title').focus().autocomplete({ source: '@Url.Action("AutoComplete", "Project")' });
     });
 </script>

@@ -9,9 +9,11 @@
     <link href="@Url.Content("~/Content/themes/base/jquery.ui.selectable.css")" rel="stylesheet" type="text/css" />
     <link href="@Url.Content("~/Content/themes/base/jquery.ui.theme.css")" rel="stylesheet" type="text/css" />
     <link href="@Url.Content("~/Content/themes/base/jquery.ui.datepicker.css")" rel="stylesheet" type="text/css" />
-    <script src="@Url.Content("~/Scripts/jquery-1.5.1.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.11.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.17.min.js")" type="text/javascript"></script>
     <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.hotkeys-0.7.9.min.js")" type="text/javascript"></script>
+<!--    <script src="@Url.Content("~/Scripts/gettodone.js")" type="text/javascript"></script>-->
 </head>
 <body>
     <div class="page">
@@ -24,7 +26,7 @@
             </div>
             <div id="menucontainer">
                 <ul id="menu">
-                    <li>@Html.ActionLink("Collect", "Stuff", "Home")</li>
+                    <li>@Html.ActionLink("Collect", "Collect", "Task")</li>
                     <li>@Html.ActionLink("Process", "Process", "Task")</li>
                     <li>@Html.ActionLink("Do", "Index", "Task")</li>
                     <li>@Html.ActionLink("Review", "Index", "Review")</li>

@@ -15,34 +15,13 @@ End Code
 <p>Active contexts: 
 @Using Html.BeginForm()
     For Each item In Model.Contexts
-        @<input type="checkbox" value="@item.Id" id="@("context" & item.Id)" name="contextIds"@IIf(ViewBag.ActiveContexts.Contains(item.Id), " checked=""checked""", "") onchange="this.form.submit();" /> @<label for="@("context" & item.Id)">@item.Name</label>@<br />
+        @<input type="checkbox" value="@item.Id" id="@("context" & item.Id)" name="contextIds"@IIf(item.Active, " checked=""checked""", "") onchange="this.form.submit();" /> @<label for="@("context" & item.Id)">@item.Name</label>@<br />
     Next    
 end using
 </p>
 </div>
 
-<table>
-    <tr>
-        <th>
-            Title
-        </th>
-        <th></th>
-    </tr>
-@For Each item In Model.Tasks 
-    Dim currentItem = item
-    @<tr id="@("task_" & currentItem.id)">
-        <td>
-            @Html.DisplayFor(Function(modelItem) currentItem.Title)
-        </td>
-        <td>
-            @Html.ActionLink("Done!", "Finish", New With {.id = currentItem.Id})
-            @Html.ActionLink("Reprocess", "Reprocess", New With {.id = currentItem.Id})
-            @Ajax.ActionLink("Drop it", "Delete", New With {.id = currentItem.Id}, New AjaxOptions With {.HttpMethod = "POST", .Confirm = "Drop it for good?", .OnFailure = "failed", .OnSuccess = "dropTask"})
-        </td>
-    </tr>
-Next
-
-</table>
+    @Html.DisplayFor(Function(m) m.Tasks)
 
 <script type="text/javascript">
     function dropTask(id) {

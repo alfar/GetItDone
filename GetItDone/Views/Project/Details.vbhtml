@@ -22,8 +22,4 @@ End Code
 @Html.Markdown(Model.Organizing)
 
 <h3>Next actions:</h3>
-<ul>
-@For Each na In Model.NextActions
-    @<li>@na.Title</li>    
-Next
-</ul>
+@Html.DisplayFor(Function(m) m.NextActions)

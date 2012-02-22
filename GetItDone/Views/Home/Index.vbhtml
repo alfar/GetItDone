@@ -8,5 +8,6 @@ End Code
 <p>Right now, @ViewBag.PeopleCount people have an account.</p>
 
 <h2>New on the site:</h2>
+<p>2012-02-17: Contexts now remember their state when you check/uncheck them.</p>
 <p>2012-02-12: Project creation now has a page of its own, which allows you to create a next action along with the project.</p>
 <p>2012-02-10: Added auto-completion of project names to the front of stuff.</p>

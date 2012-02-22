@@ -12,13 +12,10 @@
         Private personService As New PersonService(container)
 
         Function Index(contextIds() As Integer) As ActionResult
-            If contextIds Is Nothing Then
-                ViewBag.ActiveContexts = New List(Of Integer)()
-                Return View(New DoTaskModel With {.Tasks = taskservice.GetTasksForUser(), .Contexts = contextservice.GetContextsForUser()})
-            Else
-                ViewBag.ActiveContexts = New List(Of Integer)(contextIds)
-                Return View(New DoTaskModel With {.Tasks = taskservice.GetTasksForContexts(contextIds.ToArray()), .Contexts = contextservice.GetContextsForUser()})
+            If contextIds IsNot Nothing Then
+                contextservice.ToggleActiveContexts(contextIds)
             End If
+            Return View(New DoTaskModel With {.Tasks = taskservice.GetTasksForUser(), .Contexts = contextservice.GetContextsForUser()})
         End Function
 
         Function Create() As ActionResult
@@ -92,7 +89,7 @@
         Function Assign(task As AssignTaskModel) As ActionResult
             If ModelState.IsValid Then
                 If Not String.IsNullOrEmpty(task.AssignToName) Then
-                    taskservice.AssignPerson(task.Id, personService.CreatePerson(task.AssignToName).Id)
+                    taskservice.AssignPerson(task.Id, personService.CreatePerson(task.AssignToName, task.AssignToEmail).Id)
                 Else
                     taskservice.AssignPerson(task.Id, task.AssignToId)
                 End If
@@ -131,9 +128,19 @@
             Return View(taskservice.GetFinishedTasksForUser())
         End Function
 
+        Function Delegated() As ActionResult
+            Return View(taskservice.GetDelegatedTasksForUser())
+        End Function
+
         Function Reprocess(id As Integer) As ActionResult
             taskservice.Reprocess(id)
             Return RedirectToAction("Process")
         End Function
+
+        <Authorize()> _
+        Function Collect() As ActionResult
+            Return View()
+        End Function
+
     End Class
 End Namespace

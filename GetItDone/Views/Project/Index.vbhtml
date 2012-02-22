@@ -29,12 +29,6 @@ End Code
             @Html.ActionLink("Delete", "Delete", New With {.id = currentItem.Id})
         </td>
     </tr>
-    For Each task In item.NextActions
-    @<tr class="task">
-        <td>@task.Title</td>
-        <td></td>
-    </tr>
-    Next
 Next
 
 </table>

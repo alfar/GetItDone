@@ -16,7 +16,7 @@ Imports System.ComponentModel
 Imports System.Xml.Serialization
 Imports System.Runtime.Serialization
 
-<Assembly: EdmSchemaAttribute("d35d9e6d-bb22-4fc6-899c-6f364cb3db92")>
+<Assembly: EdmSchemaAttribute("16a7f6f9-8a5a-436f-8bef-a9cddd29c2b2")>
 #Region "EDM Relationship Metadata"
 <Assembly: EdmRelationshipAttribute("TaskModel", "TaskAssignment", "Person", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Person), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
 <Assembly: EdmRelationshipAttribute("TaskModel", "ContextTask", "Context", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Context), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
@@ -181,11 +181,13 @@ Public Partial Class Context
     ''' <param name="id">Initial value of the Id property.</param>
     ''' <param name="name">Initial value of the Name property.</param>
     ''' <param name="ownerId">Initial value of the OwnerId property.</param>
-    Public Shared Function CreateContext(id As Global.System.Int32, name As Global.System.String, ownerId As Global.System.Guid) As Context
+    ''' <param name="active">Initial value of the Active property.</param>
+    Public Shared Function CreateContext(id As Global.System.Int32, name As Global.System.String, ownerId As Global.System.Guid, active As Global.System.Boolean) As Context
         Dim context as Context = New Context
         context.Id = id
         context.Name = name
         context.OwnerId = ownerId
+        context.Active = active
         Return context
     End Function
 
@@ -267,6 +269,31 @@ Public Partial Class Context
     End Sub
 
     Private Partial Sub OnOwnerIdChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Active() As Global.System.Boolean
+        Get
+            Return _Active
+        End Get
+        Set
+            OnActiveChanging(value)
+            ReportPropertyChanging("Active")
+            _Active = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("Active")
+            OnActiveChanged()
+        End Set
+    End Property
+
+    Private _Active As Global.System.Boolean
+    Private Partial Sub OnActiveChanging(value As Global.System.Boolean)
+    End Sub
+
+    Private Partial Sub OnActiveChanged()
     End Sub
 
     #End Region
@@ -773,13 +800,15 @@ Public Partial Class Task
     ''' <param name="notes">Initial value of the Notes property.</param>
     ''' <param name="ownerId">Initial value of the OwnerId property.</param>
     ''' <param name="finished">Initial value of the Finished property.</param>
-    Public Shared Function CreateTask(id As Global.System.Int32, title As Global.System.String, notes As Global.System.String, ownerId As Global.System.Guid, finished As Global.System.Boolean) As Task
+    ''' <param name="createdDate">Initial value of the CreatedDate property.</param>
+    Public Shared Function CreateTask(id As Global.System.Int32, title As Global.System.String, notes As Global.System.String, ownerId As Global.System.Guid, finished As Global.System.Boolean, createdDate As Global.System.DateTime) As Task
         Dim task as Task = New Task
         task.Id = id
         task.Title = title
         task.Notes = notes
         task.OwnerId = ownerId
         task.Finished = finished
+        task.CreatedDate = createdDate
         Return task
     End Function
 
@@ -1011,6 +1040,56 @@ Public Partial Class Task
     End Sub
 
     Private Partial Sub OnDueDateChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property CreatedDate() As Global.System.DateTime
+        Get
+            Return _CreatedDate
+        End Get
+        Set
+            OnCreatedDateChanging(value)
+            ReportPropertyChanging("CreatedDate")
+            _CreatedDate = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("CreatedDate")
+            OnCreatedDateChanged()
+        End Set
+    End Property
+
+    Private _CreatedDate As Global.System.DateTime
+    Private Partial Sub OnCreatedDateChanging(value As Global.System.DateTime)
+    End Sub
+
+    Private Partial Sub OnCreatedDateChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property DoneDate() As Nullable(Of Global.System.DateTime)
+        Get
+            Return _DoneDate
+        End Get
+        Set
+            OnDoneDateChanging(value)
+            ReportPropertyChanging("DoneDate")
+            _DoneDate = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("DoneDate")
+            OnDoneDateChanged()
+        End Set
+    End Property
+
+    Private _DoneDate As Nullable(Of Global.System.DateTime)
+    Private Partial Sub OnDoneDateChanging(value As Nullable(Of Global.System.DateTime))
+    End Sub
+
+    Private Partial Sub OnDoneDateChanged()
     End Sub
 
     #End Region

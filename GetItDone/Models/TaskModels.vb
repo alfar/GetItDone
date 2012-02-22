@@ -12,6 +12,7 @@ End Class
 Public Class TaskListModel
     Public Property Id As Integer
     Public Property Title As String
+    Public Property ProjectName As String
 End Class
 
 Public Class CreateTaskModel
@@ -32,6 +33,7 @@ Public Class AssignTaskModel
     Public Property Notes As String
     Public Property AssignToId As Integer
     Public Property AssignToName As String
+    Public Property AssignToEmail As String
 End Class
 
 Public Class CalendarTaskModel
@@ -66,22 +68,22 @@ Public Class TaskService
 
     Public Function GetTasksForUser() As IQueryable(Of TaskListModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.AssignedTo Is Nothing And t.Context IsNot Nothing And Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title}
+        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.AssignedTo Is Nothing And t.Context IsNot Nothing And t.Context.Active And Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name}
     End Function
 
     Public Function GetTasksForContext(contextId As Integer) As IQueryable(Of TaskListModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.AssignedTo Is Nothing And t.ContextId = contextId And Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title}
+        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.AssignedTo Is Nothing And t.ContextId = contextId And Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name}
     End Function
 
     Public Function GetTasksForContexts(contextIds() As Integer) As IQueryable(Of TaskListModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.AssignedTo Is Nothing And contextIds.Contains(t.ContextId) And Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title}
+        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.AssignedTo Is Nothing And contextIds.Contains(t.ContextId) And Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name}
     End Function
 
     Public Function CreateTask(title As String, ownerId As Guid) As TaskListModel
         Dim ps As New PersonService(_model)
-        Dim t As New Task() With {.Title = title, .Notes = "", .OwnerId = ownerId}
+        Dim t As New Task() With {.Title = title, .Notes = "", .OwnerId = ownerId, .CreatedDate = DateTime.Now}
 
         _model.Tasks.AddObject(t)
         _model.SaveChanges()
@@ -147,6 +149,7 @@ Public Class TaskService
         Dim task As Task = _model.Tasks.FirstOrDefault(Function(t) t.Id = id AndAlso t.OwnerId = member.ProviderUserKey)
 
         If task IsNot Nothing Then
+            task.DoneDate = DateTime.Now()
             task.Finished = True
             _model.SaveChanges()
         End If
@@ -164,7 +167,7 @@ Public Class TaskService
 
     Function GetFinishedTasksForUser() As IQueryable(Of TaskListModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title}
+        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.Finished Order By t.DoneDate Descending Select New TaskListModel With {.Id = t.Id, .Title = t.Title}
     End Function
 
     Sub UpdateTask(id As Integer, Title As String)
@@ -182,9 +185,14 @@ Public Class TaskService
         Dim task As Task = _model.Tasks.FirstOrDefault(Function(t) t.Id = id AndAlso t.OwnerId = member.ProviderUserKey)
 
         If task IsNot Nothing Then
+            task.AssignedToId = Nothing
             task.ContextId = Nothing
             _model.SaveChanges()
         End If
     End Sub
 
+    Function GetDelegatedTasksForUser() As Object
+        Dim member As MembershipUser = Membership.GetUser()
+        Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.AssignedTo IsNot Nothing And Not t.Finished Group By Assignee = t.AssignedTo Into Tasks = Group Select New AssigneeModel With {.Id = Assignee.Id, .Name = Assignee.Name, .Tasks = From task In Tasks Select New TaskListModel With {.Id = task.Id, .Title = task.Title}}
+    End Function
 End Class

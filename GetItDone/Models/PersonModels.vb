@@ -13,6 +13,12 @@ Public Class ProfileModel
     Public Property Email As String
 End Class
 
+Public Class AssigneeModel
+    Public Property Id As Integer
+    Public Property Name As String
+    Public Property Tasks As IEnumerable(Of TaskListModel)
+End Class
+
 Public Class PersonModel
     Public Property Id As Integer
     Public Property Name As String
@@ -59,16 +65,20 @@ Public Class PersonService
         Return From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.OwnerId <> p.UserId Select New PersonListModel() With {.Id = p.Id, .Name = p.Name}
     End Function
 
-    Function CreatePerson(name As String) As PersonListModel
+    Function SearchPeopleForUser(query As String) As IQueryable(Of PersonModel)
+        Dim user As MembershipUser = Membership.GetUser()
+        Return From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.OwnerId <> p.UserId And (p.Name.Contains(query) Or p.Email.Contains(query)) Select New PersonModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email}
+    End Function
+
+    Function CreatePerson(name As String, email As String) As PersonModel
         Dim member As MembershipUser = Membership.GetUser()
 
-        Dim p As New Person With {.Name = name, .OwnerId = member.ProviderUserKey}
+        Dim p As New Person With {.Name = name, .Email = email, .OwnerId = member.ProviderUserKey}
 
         _model.People.AddObject(p)
         _model.SaveChanges()
 
-        Return New PersonListModel() With {.Id = p.Id, .Name = p.Name}
-
+        Return New PersonModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email}
     End Function
 
 End Class
