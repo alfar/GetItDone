@@ -1,0 +1,508 @@
+@main-color: #536682;
+@page-color: @main-color - #111;
+@header-text-color: #fff;
+@header-link-color: #fff;
+@menu-bg-color: #D9964B;
+@menu-text-color: #000;
+@menu-special-bg-color: #B52C38;
+@menu-special-text-color: #fff;
+@main-bg-color: #fff;
+@info-bg-color: #EBD1B0;
+@info-border-color: #000;
+
+body {
+	font-family: verdana;
+	font-size: 10pt;
+	margin: 0px;
+	padding: 0px;
+	background-color: @page-color;
+}
+.page {
+	width: 90%;
+	margin: auto;
+	background-color: @main-color;
+	padding: 0px 5px 5px 5px;
+	border-radius: 0px 0px 11px 11px;
+}
+a {
+}
+#header {
+	color: @header-text-color;
+	height: 45px;
+	#title {
+		margin: 0px 0px 0px 0px;
+		padding: 5px;
+		float: left;
+		h1 {
+			margin-top: 0px;
+			margin-bottom: 0px;
+			font-weight: normal;
+			text-shadow: 1px 1px 1px #111;
+		}
+	}
+
+	a {
+		color: @header-link-color;	
+		text-decoration: none;
+	}
+
+	#logindisplay {
+		padding: 5px;	
+		line-height: 20px;
+		font-size: 10px;
+		margin: 0px 20px 0px 0px;
+		float: right;
+	}
+	#menucontainer {
+	}
+	#menu {
+		list-style: none;
+		padding: 0px;
+		margin: 0px;
+		float: right;
+		margin-right: 5px;
+
+		li {
+			display: inline-block;
+			margin: 0px;
+			padding: 0px;	
+
+			a {
+				vertical-align: top;
+				display: inline-block;
+				height: 30px;
+				text-align: center;
+				width: 100px;
+				background-color: @menu-bg-color;
+				color: @menu-text-color;
+				line-height: 28px;
+				border-radius: 0px 0px 6px 6px;
+				text-decoration: none;
+				padding-top: 0px;
+			}
+
+			a:hover {
+				padding-top: 10px;
+			}
+		}
+		li.special a {
+			background-color: @menu-special-bg-color;
+			color: @menu-special-text-color;
+		}
+	}
+}
+
+#main {
+	background-color: @main-bg-color;
+	padding: 10px;
+	border-radius: 6px;
+}
+
+/* FORM LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+fieldset {
+    border: 1px solid #ddd;
+    padding: 0 1.4em 1.4em 1.4em;
+    margin: 0 0 1.5em 0;
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+textarea {
+    min-height: 75px;
+}
+
+input[type="text"], 
+input[type="password"] {
+    border: 1px solid #ccc;
+    padding: 2px;
+    font-size: 1.2em;
+    color: #444;
+    width: 200px;
+}
+
+select {
+    border: 1px solid #ccc;
+    padding: 2px;
+    font-size: 1.2em;
+    color: #444;
+}
+
+input[type="submit"] {
+    font-size: 1.2em;
+    padding: 5px;
+}
+
+/* TABLE
+----------------------------------------------------------*/
+
+table {
+    border: solid 1px #e8eef4;
+    border-collapse: collapse;
+}
+
+table td {
+    padding: 5px;
+    border: solid 1px #e8eef4;
+}
+
+table th {
+    padding: 6px 5px;
+    text-align: left;
+    background-color: #e8eef4;
+    border: solid 1px #e8eef4;
+}
+
+/* MISC  
+----------------------------------------------------------*/
+.clear {
+    clear: both;
+}
+
+.error {
+    color: Red;
+}
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+.field-validation-error {
+    color: #ff0000;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.validation-summary-errors {
+    font-weight: bold;
+    color: #ff0000;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+/* Styles for editor and display helpers
+----------------------------------------------------------*/
+.display-label, 
+.editor-label {
+    margin: 1em 0 0 0;
+}
+
+.display-field, 
+.editor-field {
+    margin: 0.5em 0 0 0;
+}
+
+.text-box {
+    width: 30em;
+}
+
+.text-box.multi-line {
+    height: 6.5em;
+}
+
+.tri-state {
+    width: 6em;
+}
+
+.info
+{
+    background-color: #ffd;
+    border: 1px solid #666;
+    padding: 10px;
+    line-height: 20px;
+}
+
+.huge-middle 
+{
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    width: 700px;
+}
+
+input.bigtext 
+{
+    font-size: 30pt;    
+    width: 600px;
+    vertical-align: middle;
+}
+
+table.workflow {
+	font-size: 10pt;
+	border: none;
+}
+table.workflow td {
+	border: none;
+}
+table.workflow .goal {
+	height: 30px;
+	padding: 8px;
+	line-height: 30px;
+	text-align: center;
+	border: 1px solid #ccc;
+}
+table.workflow .contexts ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+table.workflow .contexts ul li {
+	margin-top: 15px;
+	margin-bottom: 15px;
+	width: 100%;
+}
+table.workflow .contexts ul li a {
+	padding: 5px;
+	border: 1px solid #ccc;
+	width: 100%;
+}
+table.workflow .answer {
+	padding: 0px;
+	font-size: 8pt;
+	font-style: italic;
+}
+table.workflow .up {
+	background-image: url(/content/themes/base/images/arrowup.png);
+	background-repeat: no-repeat;
+	background-position: center 2px;
+	height: 50px;
+	vertical-align: bottom;
+	text-align: center;
+}
+table.workflow .right {
+	width: 48px;
+	background-image: url(/content/themes/base/images/arrowright.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	vertical-align: top;
+	text-align: center;
+	padding-top: 8px;
+}
+table.workflow .down {
+	background-image: url(/content/themes/base/images/arrowdown.png);
+	background-repeat: no-repeat;
+	background-position: center 14px;
+	height: 50px;		
+	vertical-align: top;
+	text-align: center;
+}
+table.workflow .question {
+	clear: both;
+	border: 1px solid #666;
+	width: 100px;
+	height: 80px;
+	text-align: center;
+}
+
+#thebigquestion
+{
+    text-align: center;
+    font-size: 2em;
+    margin: 10px auto 10px auto;
+}
+
+ul.contextcards > li
+{
+    display: inline-block;
+    border: solid 1px #696969;
+    border-radius: 5px;
+    font-size: 2em;
+    float: left;
+    min-height: 200px;
+    min-width: 200px;
+    margin: 5px;
+    padding: 5px 5px 0px 5px;
+}
+ul.tasklist
+{
+    list-style: none;
+    font-size: 0.5em;
+    padding: 10px 5px 0px 5px;
+}
+ul.tasklist li 
+{
+    margin: 2px;
+}
+.tasks 
+{
+    clear: both;
+}
+
+.task .title, .card .title
+{
+    font-weight: bold;
+    float: left;
+}
+.task .project
+{
+    clear: left;   
+    font-style: italic; 
+}
+.task .commands, .card .commands
+{
+    float: right;
+}
+.task
+{
+    border: 1px solid #ddd;
+    clear: both;
+    height: 32px;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.task a.command img, .card a.command img
+{
+    border: 0px;
+    opacity: 0.2; 
+}
+
+.task a:hover.command img, .card a:hover.command img
+{
+    border: 0px;
+    opacity: 1;
+}
+
+.card
+{
+    border: solid 1px #333;
+    border-radius: 5px;
+    padding: 8px;
+    margin-bottom: 10px;
+    background-color: #fff;
+		h3
+		{
+		    margin: 0px;
+		    padding: 0px;
+		    font-size: 1em;    
+		}
+		.meta
+		{
+		    clear: left;
+		    font-style: italic;
+		    color: #aaa;
+		    font-size: 0.8em;
+		}
+}
+
+.section 
+{
+    padding: 10px;
+}
+
+.section.left 
+{
+    width: 48%;
+    float: left;
+}
+.section.right
+{
+    border-left: 1px solid #999;
+    width: 48%;
+    float: right;
+}
+
+.select ul
+{
+    list-style: none;
+    padding: 0px;
+		li
+		{
+		    padding: 2px;
+		    margin: 2px;
+		}
+
+}
+.select ul li:hover
+{
+    background-color: #fd0;
+}
+.select ul li.selected
+{
+    background-color: #ff0;
+}
+
+.project.empty 
+{
+    color: #ddd;
+}
+.progress 
+{
+    border: 1px solid #666;
+    border-radius: 5px;
+    padding: 1px;
+    height: 16px;
+    display: inline-block;
+		.progressitem
+		{
+		    border-radius: 4px;
+		    height: 16px;
+		    width: 16px;
+		    background-color: #889988;
+		    display: inline-block;
+		    margin: 0px;
+				&.done
+				{
+				    background-color: #009900;
+				}
+		}
+}
+
+.info {
+	background-image: url('/content/themes/base/images/hint.png');
+	background-repeat: no-repeat;
+	background-position: 2px 10px;
+	background-color: @info-bg-color;
+	margin-bottom: 10px;
+	padding: 5px;
+	padding-left: 37px;
+	border-radius: 0px 6px 6px 6px;
+	border: solid 1px @info-border-color;
+	min-height: 40px;
+}
+
+.object {
+    border: 1px solid #ddd;
+    clear: both;
+    height: 32px;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+.title {
+    font-weight: bold;
+    float: left;
+}
+.commands {
+    float: right;
+}
+
+.button
+{
+	height: 20px;
+	line-height: 20px;
+	border-radius: 6px;
+    background-color: @menu-bg-color;
+    text-align: center;
+    float: left;
+    color: #fff;
+    padding: 8px;
+    margin: 8px;
+    text-decoration: none;
+
+    &:hover {
+    	margin: 4px;
+    	padding: 12px;   	
+    }
+}

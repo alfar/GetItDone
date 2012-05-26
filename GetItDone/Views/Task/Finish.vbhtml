@@ -13,7 +13,7 @@ End Code
 @Html.Partial("_CreateStuff", New GetItDone.CreateTaskModel With {.Title = Model.Title})
 
 <div class="huge-middle">
-@Using Html.BeginForm()
+@Using Html.BeginForm(New With {.From = ViewBag.From})
     @<input type="submit" value="No, I'm done" />
 End Using
 </div>

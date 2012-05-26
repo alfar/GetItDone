@@ -7,9 +7,15 @@
     <Schema Namespace="TaskModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="TaskModelStoreContainer">
           <EntitySet Name="Contexts" EntityType="TaskModel.Store.Contexts" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Emails" EntityType="TaskModel.Store.Emails" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="People" EntityType="TaskModel.Store.People" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Projects" EntityType="TaskModel.Store.Projects" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Reviews" EntityType="TaskModel.Store.Reviews" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Tasks" EntityType="TaskModel.Store.Tasks" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_AgendaTask" Association="TaskModel.Store.FK_AgendaTask">
+            <End Role="People" EntitySet="People" />
+            <End Role="Tasks" EntitySet="Tasks" />
+          </AssociationSet>
           <AssociationSet Name="FK_ContextTask" Association="TaskModel.Store.FK_ContextTask">
             <End Role="Contexts" EntitySet="Contexts" />
             <End Role="Tasks" EntitySet="Tasks" />
@@ -31,6 +37,16 @@
           <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
           <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Active" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Emails">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ConfirmationToken" Type="nvarchar" Nullable="false" MaxLength="40" />
+          <Property Name="Confirmed" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="People">
           <Key>
@@ -55,6 +71,18 @@
           <Property Name="Vision" Type="nvarchar(max)" />
           <Property Name="Brainstorm" Type="nvarchar(max)" />
           <Property Name="Organization" Type="nvarchar(max)" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="Finished" Type="bit" Nullable="false" />
+          <Property Name="DoneDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Reviews">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Started" Type="datetime" Nullable="false" />
+          <Property Name="Finished" Type="datetime" />
+          <Property Name="OwnerId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="Tasks">
           <Key>
@@ -71,7 +99,20 @@
           <Property Name="DueDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="DoneDate" Type="datetime" />
+          <Property Name="AgendaId" Type="int" />
         </EntityType>
+        <Association Name="FK_AgendaTask">
+          <End Role="People" Type="TaskModel.Store.People" Multiplicity="0..1" />
+          <End Role="Tasks" Type="TaskModel.Store.Tasks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="People">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Tasks">
+              <PropertyRef Name="AgendaId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ContextTask">
           <End Role="Contexts" Type="TaskModel.Store.Contexts" Multiplicity="0..1" />
           <End Role="Tasks" Type="TaskModel.Store.Tasks" Multiplicity="*" />
@@ -129,6 +170,12 @@
             <End Role="Project" EntitySet="Projects" />
             <End Role="Task" EntitySet="Tasks" />
           </AssociationSet>
+          <EntitySet Name="Emails" EntityType="TaskModel.UserEmail" />
+          <AssociationSet Name="AgendaTask" Association="TaskModel.AgendaTask">
+            <End Role="Person" EntitySet="People" />
+            <End Role="Task" EntitySet="Tasks" />
+          </AssociationSet>
+          <EntitySet Name="Reviews" EntityType="TaskModel.Review" />
         </EntityContainer>
         <EntityType Name="Person">
           <Key>
@@ -136,10 +183,11 @@
           </Key>
           <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
           <Property Name="Name" Nullable="false" Type="String" />
-          <Property Name="Email" Nullable="false" Type="String" />
+          <Property Name="Email" Type="String" Nullable="true" />
           <Property Type="Guid" Name="UserId" Nullable="false" />
           <NavigationProperty Name="Task" Relationship="TaskModel.TaskAssignment" FromRole="Person" ToRole="Task" />
           <Property Type="Guid" Name="OwnerId" Nullable="false" />
+          <NavigationProperty Name="Tasks" Relationship="TaskModel.AgendaTask" FromRole="Person" ToRole="Task" />
         </EntityType>
         <EntityType Name="Task">
           <Key>
@@ -159,7 +207,10 @@
           <Property Type="DateTime" Name="DueDate" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" />
           <Property Type="DateTime" Name="DoneDate" />
-        </EntityType>
+          <Property Type="Int32" Name="AgendaId" />
+          <NavigationProperty Name="People" Relationship="TaskModel.AgendaTask" FromRole="Task" ToRole="Person" />
+          <NavigationProperty Name="AgendaTo" Relationship="TaskModel.AgendaTask" FromRole="Task" ToRole="Person" />
+          </EntityType>
         <Association Name="TaskAssignment">
           <End Type="TaskModel.Person" Role="Person" Multiplicity="0..1" />
           <End Type="TaskModel.Task" Role="Task" Multiplicity="*" />
@@ -208,6 +259,9 @@
           <Property Type="String" Name="Vision" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Brainstorm" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Organization" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" />
+          <Property Type="Boolean" Name="Finished" Nullable="false" />
+          <Property Type="DateTime" Name="DoneDate" />
         </EntityType>
         <Association Name="ProjectTask">
           <End Type="TaskModel.Project" Role="Project" Multiplicity="0..1" />
@@ -221,6 +275,37 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="UserEmail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="OwnerId" Nullable="false" />
+          <Property Type="String" Name="Email" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ConfirmationToken" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="Confirmed" Nullable="false" />
+        </EntityType>
+        <Association Name="AgendaTask">
+          <End Type="TaskModel.Person" Role="Person" Multiplicity="0..1" />
+          <End Type="TaskModel.Task" Role="Task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Task">
+              <PropertyRef Name="AgendaId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Review">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" />
+          <Property Type="DateTime" Name="Started" Nullable="false" />
+          <Property Type="DateTime" Name="Finished" />
+          <Property Type="Guid" Name="OwnerId" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -241,7 +326,8 @@
     <EntitySetMapping Name="Tasks">
       <EntityTypeMapping TypeName="IsTypeOf(TaskModel.Task)">
         <MappingFragment StoreEntitySet="Tasks">
-          <ScalarProperty Name="DoneDate" ColumnName="DoneDate" />
+                <ScalarProperty Name="AgendaId" ColumnName="AgendaId" />
+                <ScalarProperty Name="DoneDate" ColumnName="DoneDate" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Title" ColumnName="Title" />
@@ -268,7 +354,10 @@
     <EntitySetMapping Name="Projects">
       <EntityTypeMapping TypeName="IsTypeOf(TaskModel.Project)">
         <MappingFragment StoreEntitySet="Projects">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="DoneDate" ColumnName="DoneDate" />
+                <ScalarProperty Name="Finished" ColumnName="Finished" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
           <ScalarProperty Name="Future" ColumnName="Future" />
@@ -280,6 +369,27 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+          <EntitySetMapping Name="Emails">
+            <EntityTypeMapping TypeName="TaskModel.UserEmail">
+              <MappingFragment StoreEntitySet="Emails">
+                <ScalarProperty Name="Confirmed" ColumnName="Confirmed" />
+                <ScalarProperty Name="ConfirmationToken" ColumnName="ConfirmationToken" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Reviews">
+            <EntityTypeMapping TypeName="TaskModel.Review">
+              <MappingFragment StoreEntitySet="Reviews">
+                <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+                <ScalarProperty Name="Finished" ColumnName="Finished" />
+                <ScalarProperty Name="Started" ColumnName="Started" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping></edmx:Mappings>
   </edmx:Runtime>
@@ -301,22 +411,27 @@
     <edmx:Diagrams>
       <Diagram Name="TaskModel" >
         <EntityTypeShape EntityType="TaskModel.Person" PointX="0.5" PointY="0.625" Width="1.5" Height="1.787985026041667" />
-        <EntityTypeShape EntityType="TaskModel.Task" Width="1.5" PointX="3.875" PointY="0.625" Height="1.787985026041667" />
+        <EntityTypeShape EntityType="TaskModel.Task" Width="1.5" PointX="3.875" PointY="0.625" Height="4.2879036458333326" />
         <AssociationConnector Association="TaskModel.TaskAssignment">
-          <ConnectorPoint PointX="2" PointY="1.615143229166667" />
-          <ConnectorPoint PointX="3.875" PointY="1.615143229166667" />
+          <ConnectorPoint PointX="2" PointY="2.2160211181640621" />
+          <ConnectorPoint PointX="3.875" PointY="2.2160211181640621" />
         </AssociationConnector>
         <EntityTypeShape EntityType="TaskModel.Context" Width="1.5" PointX="7.625" PointY="1" Height="1.787985026041667" />
         <AssociationConnector Association="TaskModel.ContextTask">
-          <ConnectorPoint PointX="7.625" PointY="1.8939925130208335" />
-          <ConnectorPoint PointX="5.375" PointY="1.8939925130208335" />
+          <ConnectorPoint PointX="7.625" PointY="1.9901432291666668" />
+          <ConnectorPoint PointX="5.375" PointY="1.9901432291666668" />
         </AssociationConnector>
         <EntityTypeShape EntityType="TaskModel.Project" Width="1.5" PointX="6.375" PointY="3.375" Height="1.5956835937499996" />
         <AssociationConnector Association="TaskModel.ProjectTask">
-          <ConnectorPoint PointX="6.375" PointY="4.3648898229166671" />
-          <ConnectorPoint PointX="4.625" PointY="4.3648898229166671" />
-          <ConnectorPoint PointX="4.625" PointY="3.5667936197916665" />
+          <ConnectorPoint PointX="6.375" PointY="4.1439518229166667" />
+          <ConnectorPoint PointX="5.375" PointY="4.1439518229166667" />
         </AssociationConnector>
+        <EntityTypeShape EntityType="TaskModel.UserEmail" Width="1.5" PointX="0.75" PointY="3.75" Height="1.9802864583333317" />
+        <AssociationConnector Association="TaskModel.AgendaTask" >
+          <ConnectorPoint PointX="2" PointY="1.3580105590820311" />
+          <ConnectorPoint PointX="3.875" PointY="1.3580105590820311" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="TaskModel.Review" Width="1.5" PointX="0.75" PointY="5.875" Height="1.7879850260416674" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

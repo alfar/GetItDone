@@ -11,6 +11,10 @@ Public Class ProfileModel
     <DataType(DataType.EmailAddress)> _
     <Display(Name:="Email address")> _
     Public Property Email As String
+
+    Public Property Emails As IQueryable(Of EmailModel)
+
+    Public Property APIKey As Guid
 End Class
 
 Public Class AssigneeModel
@@ -23,11 +27,18 @@ Public Class PersonModel
     Public Property Id As Integer
     Public Property Name As String
     Public Property Email As String
+    Public Property HasAccount As Boolean
 End Class
 
 Public Class PersonListModel
     Public Property Id As Integer
     Public Property Name As String
+End Class
+
+Public Class CreatePersonModel
+    <Required()> _
+    Public Property Name As String
+    Public Property Email As String
 End Class
 
 Public Class PersonService
@@ -44,20 +55,39 @@ Public Class PersonService
         If person Is Nothing Then
             person = New Person()
             person.UserId = user.ProviderUserKey
+            person.OwnerId = user.ProviderUserKey
             person.Email = user.Email
             person.Name = user.UserName
+
+            Dim es As New EmailService(_model)
+            es.CreateEmailForUser(person.Email)
 
             _model.People.AddObject(person)
 
             _model.SaveChanges()
         End If
 
+        Dim persons As IQueryable(Of Person) = From p In _model.People Join e In _model.Emails On p.Email Equals e.Email Where p.UserId <> user.ProviderUserKey And e.OwnerId = user.ProviderUserKey Select p
+
+        If persons.Any Then
+            For Each p As Person In persons
+                p.UserId = user.ProviderUserKey
+            Next
+            _model.SaveChanges()
+        End If
+
         Return person
+    End Function
+
+    Public Function GetPersonForUser(id As Integer) As PersonModel
+        Dim user As MembershipUser = Membership.GetUser()
+        Return (From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.Id = id Select New PersonModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email}).FirstOrDefault
     End Function
 
     Public Function GetProfileForUser() As ProfileModel
         Dim person As Person = GetPersonForUser()
-        Return New ProfileModel With {.Email = Person.Email, .Name = Person.Name}
+
+        Return New ProfileModel With {.Email = person.Email, .Name = person.Name, .Emails = (From e In _model.Emails Where e.OwnerId = person.UserId Order By e.Email Select New EmailModel With {.Id = e.Id, .Email = e.Email, .Confirmed = e.Confirmed}), .APIKey = person.OwnerId}
     End Function
 
     Function GetPeopleForUser() As IQueryable(Of PersonListModel)
@@ -67,7 +97,7 @@ Public Class PersonService
 
     Function SearchPeopleForUser(query As String) As IQueryable(Of PersonModel)
         Dim user As MembershipUser = Membership.GetUser()
-        Return From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.OwnerId <> p.UserId And (p.Name.Contains(query) Or p.Email.Contains(query)) Select New PersonModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email}
+        Return From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.OwnerId <> p.UserId And (p.Name.Contains(query) Or p.Email.Contains(query)) Select New PersonModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email, .HasAccount = p.UserId <> Guid.Empty}
     End Function
 
     Function CreatePerson(name As String, email As String) As PersonModel
@@ -81,4 +111,34 @@ Public Class PersonService
         Return New PersonModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email}
     End Function
 
+    Function GetAssignablesForUser() As IQueryable(Of PersonListModel)
+        Dim user As MembershipUser = Membership.GetUser()
+        Return From p In _model.People Join e In _model.Emails On p.Email Equals e.Email Where p.UserId <> user.ProviderUserKey And e.OwnerId = user.ProviderUserKey Select New PersonListModel() With {.Id = p.Id, .Name = p.Name}
+    End Function
+
+    Sub AssignUser(Id As Integer)
+        Dim user As MembershipUser = Membership.GetUser()
+        Dim person As Person = (From p In _model.People Join e In _model.Emails On p.Email Equals e.Email Where p.UserId <> user.ProviderUserKey And e.OwnerId = user.ProviderUserKey And p.Id = Id Select p).FirstOrDefault
+
+        If person IsNot Nothing Then
+            person.UserId = user.ProviderUserKey
+            _model.SaveChanges()
+        End If
+    End Sub
+
+    Function GetAgendaPeopleForUser() As IQueryable(Of PersonListModel)
+        Dim user As MembershipUser = Membership.GetUser()
+        Return From t In _model.Tasks Where t.OwnerId = user.ProviderUserKey And Not t.Finished And t.AgendaTo IsNot Nothing Select p = t.AgendaTo Distinct Select New PersonListModel() With {.Id = p.Id, .Name = p.Name}
+    End Function
+
+    Sub UpdatePerson(id As Integer, name As String, email As String)
+        Dim user As MembershipUser = Membership.GetUser()
+        Dim person As Person = (From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.Id = id Select p).FirstOrDefault
+
+        If person IsNot Nothing Then
+            person.Name = name
+            person.Email = email
+            _model.SaveChanges()
+        End If
+    End Sub
 End Class

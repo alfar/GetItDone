@@ -11,16 +11,23 @@ Public Class MvcApplication
     Shared Sub RegisterRoutes(ByVal routes As RouteCollection)
         routes.IgnoreRoute("{resource}.axd/{*pathInfo}")
 
+
         ' MapRoute takes the following parameters, in order:
         ' (1) Route name
         ' (2) URL with parameters
         ' (3) Parameter defaults
+
+        routes.MapRoute("loginAPI", "api/account/{action}", New With {.controller = "ApiAccount"}, Nothing, New String() {"GetItDone.GetItDone.API"})
+
         routes.MapRoute( _
             "Default", _
             "{controller}/{action}/{id}", _
-            New With {.controller = "Home", .action = "Index", .id = UrlParameter.Optional} _
+            New With {.controller = "Home", .action = "Index", .id = UrlParameter.Optional}, _
+            Nothing,
+            New String() {"GetItDone", "GetItDone.GetItDone"}
         )
 
+        routes.MapRoute("API", "api/{userkey}/{controller}/{action}/{id}", New With {.action = "Index", .id = UrlParameter.Optional}, Nothing, New String() {"GetItDone.GetItDone.API"})
     End Sub
 
     Sub Application_Start()

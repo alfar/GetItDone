@@ -36,21 +36,25 @@
         ' POST: /Project/Create
 
         <HttpPost()> _
-        Function Create(model As CreateProjectModel) As ActionResult
+        Function Create(model As CreateProjectModel, Optional From As String = "Process") As ActionResult
             Try
                 If ModelState.IsValid Then
                     Dim project As ProjectModel = service.CreateProject(model.Name)
 
                     If model.CreateNextAction Then
                         If model.NextActionId.HasValue Then
-                            taskservice.UpdateTask(model.NextActionId.Value, model.NextAction)
+                            taskservice.UpdateTask(model.NextActionId.Value, model.NextAction, Nothing)
                             taskservice.AssignProject(model.NextActionId.Value, project.Id)
                         Else
-                            Dim task As TaskListModel = taskservice.CreateTask(model.NextAction, Membership.GetUser().ProviderUserKey)
+                            Dim task As TaskListModel = taskservice.CreateTask(model.NextAction, "", Membership.GetUser().ProviderUserKey)
                             taskservice.AssignProject(task.Id, project.Id)
                         End If
                     ElseIf model.NextActionId.HasValue Then
                         taskservice.DeleteTask(model.NextActionId.Value)
+                    End If
+
+                    If From = "Review" Then
+                        Return RedirectToAction("Process", "Review")
                     End If
 
                     Return RedirectToAction("Process", "Task", Nothing)
@@ -62,12 +66,16 @@
             End Try
         End Function
 
-        Function CreateFromStuff(id As Integer) As ActionResult
+        Function CreateFromStuff(id As Integer, Optional From As String = "Process") As ActionResult
             Dim task As TaskModel = taskservice.GetTaskForUser(id)
             If task IsNot Nothing Then
+                ViewBag.From = [From]
                 Return View(New CreateProjectModel() With {.Name = task.Title, .CreateNextAction = True, .NextAction = task.Title, .NextActionId = id})
             Else
-                Return RedirectToAction("Process", "Task", Nothing)
+                If From = "Review" Then
+                    Return RedirectToAction("Process", "Review")
+                End If
+                Return RedirectToAction("Process", "Task")
             End If
         End Function
 
@@ -95,11 +103,25 @@
             Return View(service.GetProjectForUser(id))
         End Function
 
+        Function Finish(id As Integer) As ActionResult
+            Return View(service.GetProjectForUser(id))
+        End Function
+
+        <HttpPost()> _
+        Function Finish(ByVal id As Integer, ByVal collection As FormCollection) As ActionResult
+            Try
+                service.FinishProject(id)
+                Return RedirectToAction("Index")
+            Catch
+                Return View()
+            End Try
+        End Function
+
         '
         ' GET: /Project/Delete/5
 
         Function Delete(ByVal id As Integer) As ActionResult
-            Return View()
+            Return View(service.GetProjectForUser(id))
         End Function
 
         '
@@ -108,7 +130,7 @@
         <HttpPost()> _
         Function Delete(ByVal id As Integer, ByVal collection As FormCollection) As ActionResult
             Try
-                ' TODO: Add delete logic here
+                service.DeleteProject(id, False)
 
                 Return RedirectToAction("Index")
             Catch

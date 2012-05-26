@@ -335,46 +335,72 @@ input.bigtext
     vertical-align: middle;
 }
 
-table.workflow
-{
-    border: none;
-}
 
-table.workflow td
-{
-    border: none;
-    text-align: center;
-    height: 16px;
+table.workflow {
+	font-size: 10pt;
+	border: none;
 }
-
-table.workflow .question 
-{
-    background-color: #ccc;
-    height: 75px;
-    width: 120px;
-    border: 1px solid #666;
+table.workflow td {
+	border: none;
 }
-table.workflow .answer
-{
-    font-style: italic;
+table.workflow .goal {
+	height: 30px;
+	padding: 8px;
+	line-height: 30px;
+	text-align: center;
+	border: 1px solid #ccc;
 }
-table.workflow .answer.down, table.workflow .answer.up
-{
-    height: 40px;
+table.workflow .contexts ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
 }
-table.workflow .answer.right
-{
-    width: 66px;
-    background-image: url(/content/themes/base/images/arrow-right.png);
-    background-position: center center;
-    background-repeat: no-repeat;
-    color: #fff;
+table.workflow .contexts ul li {
+	margin-top: 15px;
+	margin-bottom: 15px;
+	width: 100%;
 }
-table.workflow .goal
-{
-    height: 60px;
-    padding: 0px 15px 0px 15px;
-    border: 1px solid #666;
+table.workflow .contexts ul li a {
+	padding: 5px;
+	border: 1px solid #ccc;
+	width: 100%;
+}
+table.workflow .answer {
+	padding: 0px;
+	font-size: 8pt;
+	font-style: italic;
+}
+table.workflow .up {
+	background-image: url(/content/themes/base/images/arrowup.png);
+	background-repeat: no-repeat;
+	background-position: center 2px;
+	height: 50px;
+	vertical-align: bottom;
+	text-align: center;
+}
+table.workflow .right {
+	width: 48px;
+	background-image: url(/content/themes/base/images/arrowright.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	vertical-align: top;
+	text-align: center;
+	padding-top: 8px;
+}
+table.workflow .down {
+	background-image: url(/content/themes/base/images/arrowdown.png);
+	background-repeat: no-repeat;
+	background-position: center 14px;
+	height: 50px;		
+	vertical-align: top;
+	text-align: center;
+}
+table.workflow .question {
+	clear: both;
+	border: 1px solid #666;
+	width: 100px;
+	height: 80px;
+	text-align: center;
 }
 
 #thebigquestion

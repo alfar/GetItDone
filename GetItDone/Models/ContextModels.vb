@@ -44,6 +44,12 @@ Public Class ContextService
         Return From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey Select New ContextListModel With {.Id = c.Id, .Name = c.Name, .Active = c.Active}
     End Function
 
+    Public Function GetNonemptyContextsForUser() As IQueryable(Of ContextListModel)
+        Dim member As MembershipUser = Membership.GetUser()
+
+        Return From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey And c.Tasks.Any(Function(t) Not t.Finished) Select New ContextListModel With {.Id = c.Id, .Name = c.Name, .Active = c.Active}
+    End Function
+
     Public Function CreateContext(name As String) As ContextListModel
         Dim member As MembershipUser = Membership.GetUser()
 

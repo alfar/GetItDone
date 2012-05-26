@@ -7,11 +7,17 @@ End Using
 </div>
 
 <script type="text/javascript">
+    var origTitle = '';
+
     function clearTitle(model) {
-        $('#Title').val('@Model.Title').focus();
+        $('#Title').val(origTitle).focus();
     }
 
+    $(function () {
+        origTitle = $('<div />').html('@Model.Title').text();
+    });
+
     $(document).ready(function () {
-        $('#Title').focus().autocomplete({ source: '@Url.Action("AutoComplete", "Project")' });
+        $('#Title').select().focus().autocomplete({ source: '@Url.Action("AutoComplete", "Project")' });
     });
 </script>

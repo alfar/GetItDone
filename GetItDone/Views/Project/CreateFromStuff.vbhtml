@@ -9,7 +9,7 @@ End Code
 <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
 
-@Using Html.BeginForm("Create", "Project")
+@Using Html.BeginForm("Create", "Project", New With {.From = ViewBag.From})
     @Html.ValidationSummary(True)
     @<fieldset>
         <legend>Create project</legend>

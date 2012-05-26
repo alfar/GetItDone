@@ -5,6 +5,28 @@ Imports System.Globalization
 Public Class ProjectModel
     Public Property Id As Integer
     Public Property Name As String
+    <DisplayName("Created")> _
+    Public Property CreatedDate As DateTime
+End Class
+
+Public Class ProjectReviewModel
+    Inherits ProjectModel
+
+    Public Property HasPurpose As Boolean
+    Public Property HasPrinciples As Boolean
+    Public Property HasVision As Boolean
+    Public Property HasBrainstorm As Boolean
+    Public Property HasOrganizing As Boolean
+End Class
+
+Public Class FutureProjectListModel
+    Inherits ProjectModel
+End Class
+
+Public Class FinishedProjectListModel
+    Inherits ProjectModel
+
+    Public Property DoneDate As DateTime?
 End Class
 
 Public Class ProjectListModel
@@ -47,34 +69,39 @@ Public Class ProjectService
 
     Public Function GetProjectsForUser() As IQueryable(Of ProjectModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future Select New ProjectListModel With {.Id = p.Id, .Name = p.Name, .NextActions = From t In p.Tasks Select New TaskListModel With {.Id = t.Id, .Title = t.Title}}
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Finished Select New ProjectListModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate, .NextActions = From t In p.Tasks Select New TaskListModel With {.Id = t.Id, .Title = t.Title}}
     End Function
 
     Public Function GetFutureProjectsForUser() As IQueryable(Of ProjectModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Future Select New ProjectModel With {.Id = p.Id, .Name = p.Name}
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Future And Not p.Finished Select New FutureProjectListModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate}
+    End Function
+
+    Public Function GetFinishedProjectsForUser() As IQueryable(Of FinishedProjectListModel)
+        Dim member As MembershipUser = Membership.GetUser()
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Finished Select New FinishedProjectListModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate, .DoneDate = p.DoneDate}
     End Function
 
     Public Function GetEmptyProjectsForUser() As IQueryable(Of ProjectModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Tasks.Any() Select New ProjectModel With {.Id = p.Id, .Name = p.Name}
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Tasks.Any() Select New ProjectModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.createdDate}
     End Function
 
-    Public Function CreateProject(name As String) As ProjectModel
+    Public Function CreateProject(name As String, Optional future As Boolean = False) As ProjectModel
         Dim member As MembershipUser = Membership.GetUser()
 
-        Dim p As New Project With {.Name = name, .OwnerId = member.ProviderUserKey}
+        Dim p As New Project With {.Name = name, .OwnerId = member.ProviderUserKey, .CreatedDate = DateTime.Now, .Future = future}
 
         _model.Projects.AddObject(p)
 
         _model.SaveChanges()
 
-        Return New ProjectModel With {.Name = name, .Id = p.Id}
+        Return New ProjectModel With {.Name = name, .Id = p.Id, .CreatedDate = p.CreatedDate}
     End Function
 
     Function GetProjectForUser(id As Integer) As ProjectDetailModel
         Dim member As MembershipUser = Membership.GetUser()
-        Return (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id Select New ProjectDetailModel With {.Id = p.Id, .Name = p.Name, .Purpose = p.Purpose, .Principles = p.Principles, .Vision = p.Vision, .Brainstorm = p.Brainstorm, .Organizing = p.Organization, .NextActions = From t In p.Tasks Select New TaskListModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name}}).FirstOrDefault()
+        Return (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id Select New ProjectDetailModel With {.Id = p.Id, .Name = p.Name, .Purpose = p.Purpose, .Principles = p.Principles, .Vision = p.Vision, .Brainstorm = p.Brainstorm, .Organizing = p.Organization, .CreatedDate = p.createdDate, .NextActions = From t In p.Tasks Select New TaskListModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name}}).FirstOrDefault()
     End Function
 
     Sub UpdateProject(id As Integer, data As ProjectDetailModel)
@@ -89,6 +116,43 @@ Public Class ProjectService
             proj.Brainstorm = data.Brainstorm
             proj.Organization = data.Organizing
 
+            _model.SaveChanges()
+        End If
+    End Sub
+
+    Sub FinishProject(id As Integer)
+        Dim member As MembershipUser = Membership.GetUser()
+
+        Dim proj As Project = (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id).FirstOrDefault
+        If proj IsNot Nothing Then
+            proj.Finished = True
+            proj.DoneDate = DateTime.Now()
+
+            For Each t As Task In proj.Tasks
+                If Not t.Finished Then
+                    t.Finished = True
+                    t.DoneDate = proj.DoneDate
+                End If
+            Next
+
+            _model.SaveChanges()
+        End If
+    End Sub
+
+    Sub DeleteProject(id As Integer, cleanTasks As Boolean)
+        Dim member As MembershipUser = Membership.GetUser()
+
+        Dim proj As Project = (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id).FirstOrDefault
+        If proj IsNot Nothing Then
+            For Each t As Task In proj.Tasks
+                If cleanTasks Then
+                    _model.DeleteObject(t)
+                Else
+                    t.Project = Nothing
+                End If
+            Next
+
+            _model.DeleteObject(proj)
             _model.SaveChanges()
         End If
     End Sub

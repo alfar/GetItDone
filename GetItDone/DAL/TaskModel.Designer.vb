@@ -16,11 +16,12 @@ Imports System.ComponentModel
 Imports System.Xml.Serialization
 Imports System.Runtime.Serialization
 
-<Assembly: EdmSchemaAttribute("16a7f6f9-8a5a-436f-8bef-a9cddd29c2b2")>
+<Assembly: EdmSchemaAttribute("5fe3374d-7d53-44e6-a7ed-f2df40dbd4f9")>
 #Region "EDM Relationship Metadata"
 <Assembly: EdmRelationshipAttribute("TaskModel", "TaskAssignment", "Person", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Person), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
 <Assembly: EdmRelationshipAttribute("TaskModel", "ContextTask", "Context", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Context), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
 <Assembly: EdmRelationshipAttribute("TaskModel", "ProjectTask", "Project", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Project), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
+<Assembly: EdmRelationshipAttribute("TaskModel", "AgendaTask", "Person", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, GetType(Person), "Task", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, GetType(Task), True)>
 
 #End Region
 
@@ -128,6 +129,34 @@ Public Partial Class TaskModelContainer
 
     Private _Projects As ObjectSet(Of Project)
 
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    Public ReadOnly Property Emails() As ObjectSet(Of UserEmail)
+        Get
+            If (_Emails Is Nothing) Then
+                _Emails = MyBase.CreateObjectSet(Of UserEmail)("Emails")
+            End If
+            Return _Emails
+        End Get
+    End Property
+
+    Private _Emails As ObjectSet(Of UserEmail)
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    Public ReadOnly Property Reviews() As ObjectSet(Of Review)
+        Get
+            If (_Reviews Is Nothing) Then
+                _Reviews = MyBase.CreateObjectSet(Of Review)("Reviews")
+            End If
+            Return _Reviews
+        End Get
+    End Property
+
+    Private _Reviews As ObjectSet(Of Review)
+
     #End Region
     #Region "AddTo Methods"
 
@@ -157,6 +186,20 @@ Public Partial Class TaskModelContainer
     ''' </summary>
     Public Sub AddToProjects(ByVal project As Project)
         MyBase.AddObject("Projects", project)
+    End Sub
+
+    ''' <summary>
+    ''' Deprecated Method for adding a new object to the Emails EntitySet. Consider using the .Add method of the associated ObjectSet(Of T) property instead.
+    ''' </summary>
+    Public Sub AddToEmails(ByVal userEmail As UserEmail)
+        MyBase.AddObject("Emails", userEmail)
+    End Sub
+
+    ''' <summary>
+    ''' Deprecated Method for adding a new object to the Reviews EntitySet. Consider using the .Add method of the associated ObjectSet(Of T) property instead.
+    ''' </summary>
+    Public Sub AddToReviews(ByVal review As Review)
+        MyBase.AddObject("Reviews", review)
     End Sub
 
     #End Region
@@ -335,14 +378,12 @@ Public Partial Class Person
     ''' </summary>
     ''' <param name="id">Initial value of the Id property.</param>
     ''' <param name="name">Initial value of the Name property.</param>
-    ''' <param name="email">Initial value of the Email property.</param>
     ''' <param name="userId">Initial value of the UserId property.</param>
     ''' <param name="ownerId">Initial value of the OwnerId property.</param>
-    Public Shared Function CreatePerson(id As Global.System.Int32, name As Global.System.String, email As Global.System.String, userId As Global.System.Guid, ownerId As Global.System.Guid) As Person
+    Public Shared Function CreatePerson(id As Global.System.Int32, name As Global.System.String, userId As Global.System.Guid, ownerId As Global.System.Guid) As Person
         Dim person as Person = New Person
         person.Id = id
         person.Name = name
-        person.Email = email
         person.UserId = userId
         person.OwnerId = ownerId
         Return person
@@ -406,7 +447,7 @@ Public Partial Class Person
     ''' <summary>
     ''' No Metadata Documentation available.
     ''' </summary>
-    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
     <DataMemberAttribute()>
     Public Property Email() As Global.System.String
         Get
@@ -415,7 +456,7 @@ Public Partial Class Person
         Set
             OnEmailChanging(value)
             ReportPropertyChanging("Email")
-            _Email = StructuralObject.SetValidValue(value, false)
+            _Email = StructuralObject.SetValidValue(value, true)
             ReportPropertyChanged("Email")
             OnEmailChanged()
         End Set
@@ -499,6 +540,24 @@ Public Partial Class Person
         End Set
     End Property
 
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <XmlIgnoreAttribute()>
+    <SoapIgnoreAttribute()>
+    <DataMemberAttribute()>
+    <EdmRelationshipNavigationPropertyAttribute("TaskModel", "AgendaTask", "Task")>
+     Public Property Tasks() As EntityCollection(Of Task)
+        Get
+            Return CType(Me,IEntityWithRelationships).RelationshipManager.GetRelatedCollection(Of Task)("TaskModel.AgendaTask", "Task")
+        End Get
+        Set
+            If (Not value Is Nothing)
+                CType(Me, IEntityWithRelationships).RelationshipManager.InitializeRelatedCollection(Of Task)("TaskModel.AgendaTask", "Task", value)
+            End If
+        End Set
+    End Property
+
     #End Region
 End Class
 
@@ -519,12 +578,16 @@ Public Partial Class Project
     ''' <param name="name">Initial value of the Name property.</param>
     ''' <param name="ownerId">Initial value of the OwnerId property.</param>
     ''' <param name="future">Initial value of the Future property.</param>
-    Public Shared Function CreateProject(id As Global.System.Int32, name As Global.System.String, ownerId As Global.System.Guid, future As Global.System.Boolean) As Project
+    ''' <param name="createdDate">Initial value of the CreatedDate property.</param>
+    ''' <param name="finished">Initial value of the Finished property.</param>
+    Public Shared Function CreateProject(id As Global.System.Int32, name As Global.System.String, ownerId As Global.System.Guid, future As Global.System.Boolean, createdDate As Global.System.DateTime, finished As Global.System.Boolean) As Project
         Dim project as Project = New Project
         project.Id = id
         project.Name = name
         project.OwnerId = ownerId
         project.Future = future
+        project.CreatedDate = createdDate
+        project.Finished = finished
         Return project
     End Function
 
@@ -758,6 +821,81 @@ Public Partial Class Project
     Private Partial Sub OnOrganizationChanged()
     End Sub
 
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property CreatedDate() As Global.System.DateTime
+        Get
+            Return _CreatedDate
+        End Get
+        Set
+            OnCreatedDateChanging(value)
+            ReportPropertyChanging("CreatedDate")
+            _CreatedDate = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("CreatedDate")
+            OnCreatedDateChanged()
+        End Set
+    End Property
+
+    Private _CreatedDate As Global.System.DateTime
+    Private Partial Sub OnCreatedDateChanging(value As Global.System.DateTime)
+    End Sub
+
+    Private Partial Sub OnCreatedDateChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Finished() As Global.System.Boolean
+        Get
+            Return _Finished
+        End Get
+        Set
+            OnFinishedChanging(value)
+            ReportPropertyChanging("Finished")
+            _Finished = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("Finished")
+            OnFinishedChanged()
+        End Set
+    End Property
+
+    Private _Finished As Global.System.Boolean
+    Private Partial Sub OnFinishedChanging(value As Global.System.Boolean)
+    End Sub
+
+    Private Partial Sub OnFinishedChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property DoneDate() As Nullable(Of Global.System.DateTime)
+        Get
+            Return _DoneDate
+        End Get
+        Set
+            OnDoneDateChanging(value)
+            ReportPropertyChanging("DoneDate")
+            _DoneDate = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("DoneDate")
+            OnDoneDateChanged()
+        End Set
+    End Property
+
+    Private _DoneDate As Nullable(Of Global.System.DateTime)
+    Private Partial Sub OnDoneDateChanging(value As Nullable(Of Global.System.DateTime))
+    End Sub
+
+    Private Partial Sub OnDoneDateChanged()
+    End Sub
+
     #End Region
     #Region "Navigation Properties"
 
@@ -778,6 +916,136 @@ Public Partial Class Project
             End If
         End Set
     End Property
+
+    #End Region
+End Class
+
+''' <summary>
+''' No Metadata Documentation available.
+''' </summary>
+<EdmEntityTypeAttribute(NamespaceName:="TaskModel", Name:="Review")>
+<Serializable()>
+<DataContractAttribute(IsReference:=True)>
+Public Partial Class Review
+    Inherits EntityObject
+    #Region "Factory Method"
+
+    ''' <summary>
+    ''' Create a new Review object.
+    ''' </summary>
+    ''' <param name="id">Initial value of the Id property.</param>
+    ''' <param name="started">Initial value of the Started property.</param>
+    Public Shared Function CreateReview(id As Global.System.Guid, started As Global.System.DateTime) As Review
+        Dim review as Review = New Review
+        review.Id = id
+        review.Started = started
+        Return review
+    End Function
+
+    #End Region
+    #Region "Primitive Properties"
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=true, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Id() As Global.System.Guid
+        Get
+            Return _Id
+        End Get
+        Set
+            If (_Id <> Value) Then
+                OnIdChanging(value)
+                ReportPropertyChanging("Id")
+                _Id = StructuralObject.SetValidValue(value)
+                ReportPropertyChanged("Id")
+                OnIdChanged()
+            End If
+        End Set
+    End Property
+
+    Private _Id As Global.System.Guid
+    Private Partial Sub OnIdChanging(value As Global.System.Guid)
+    End Sub
+
+    Private Partial Sub OnIdChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Started() As Global.System.DateTime
+        Get
+            Return _Started
+        End Get
+        Set
+            OnStartedChanging(value)
+            ReportPropertyChanging("Started")
+            _Started = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("Started")
+            OnStartedChanged()
+        End Set
+    End Property
+
+    Private _Started As Global.System.DateTime
+    Private Partial Sub OnStartedChanging(value As Global.System.DateTime)
+    End Sub
+
+    Private Partial Sub OnStartedChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property Finished() As Nullable(Of Global.System.DateTime)
+        Get
+            Return _Finished
+        End Get
+        Set
+            OnFinishedChanging(value)
+            ReportPropertyChanging("Finished")
+            _Finished = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("Finished")
+            OnFinishedChanged()
+        End Set
+    End Property
+
+    Private _Finished As Nullable(Of Global.System.DateTime)
+    Private Partial Sub OnFinishedChanging(value As Nullable(Of Global.System.DateTime))
+    End Sub
+
+    Private Partial Sub OnFinishedChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property OwnerId() As Nullable(Of Global.System.Guid)
+        Get
+            Return _OwnerId
+        End Get
+        Set
+            OnOwnerIdChanging(value)
+            ReportPropertyChanging("OwnerId")
+            _OwnerId = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("OwnerId")
+            OnOwnerIdChanged()
+        End Set
+    End Property
+
+    Private _OwnerId As Nullable(Of Global.System.Guid)
+    Private Partial Sub OnOwnerIdChanging(value As Nullable(Of Global.System.Guid))
+    End Sub
+
+    Private Partial Sub OnOwnerIdChanged()
+    End Sub
 
     #End Region
 End Class
@@ -1092,6 +1360,31 @@ Public Partial Class Task
     Private Partial Sub OnDoneDateChanged()
     End Sub
 
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=true)>
+    <DataMemberAttribute()>
+    Public Property AgendaId() As Nullable(Of Global.System.Int32)
+        Get
+            Return _AgendaId
+        End Get
+        Set
+            OnAgendaIdChanging(value)
+            ReportPropertyChanging("AgendaId")
+            _AgendaId = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("AgendaId")
+            OnAgendaIdChanged()
+        End Set
+    End Property
+
+    Private _AgendaId As Nullable(Of Global.System.Int32)
+    Private Partial Sub OnAgendaIdChanging(value As Nullable(Of Global.System.Int32))
+    End Sub
+
+    Private Partial Sub OnAgendaIdChanged()
+    End Sub
+
     #End Region
     #Region "Navigation Properties"
 
@@ -1187,6 +1480,229 @@ Public Partial Class Task
             End If
         End Set
     End Property
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <XmlIgnoreAttribute()>
+    <SoapIgnoreAttribute()>
+    <DataMemberAttribute()>
+    <EdmRelationshipNavigationPropertyAttribute("TaskModel", "AgendaTask", "Person")>
+    Public Property People() As Person
+        Get
+            Return CType(Me, IEntityWithRelationships).RelationshipManager.GetRelatedReference(Of Person)("TaskModel.AgendaTask", "Person").Value
+        End Get
+        Set
+            CType(Me, IEntityWithRelationships).RelationshipManager.GetRelatedReference(Of Person)("TaskModel.AgendaTask", "Person").Value = value
+        End Set
+    End Property
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <BrowsableAttribute(False)>
+    <DataMemberAttribute()>
+    Public Property PeopleReference() As EntityReference(Of Person)
+        Get
+            Return CType(Me, IEntityWithRelationships).RelationshipManager.GetRelatedReference(Of Person)("TaskModel.AgendaTask", "Person")
+        End Get
+        Set
+            If (Not value Is Nothing)
+                CType(Me, IEntityWithRelationships).RelationshipManager.InitializeRelatedReference(Of Person)("TaskModel.AgendaTask", "Person", value)
+            End If
+        End Set
+    End Property
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <XmlIgnoreAttribute()>
+    <SoapIgnoreAttribute()>
+    <DataMemberAttribute()>
+    <EdmRelationshipNavigationPropertyAttribute("TaskModel", "AgendaTask", "Person")>
+    Public Property AgendaTo() As Person
+        Get
+            Return CType(Me, IEntityWithRelationships).RelationshipManager.GetRelatedReference(Of Person)("TaskModel.AgendaTask", "Person").Value
+        End Get
+        Set
+            CType(Me, IEntityWithRelationships).RelationshipManager.GetRelatedReference(Of Person)("TaskModel.AgendaTask", "Person").Value = value
+        End Set
+    End Property
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <BrowsableAttribute(False)>
+    <DataMemberAttribute()>
+    Public Property AgendaToReference() As EntityReference(Of Person)
+        Get
+            Return CType(Me, IEntityWithRelationships).RelationshipManager.GetRelatedReference(Of Person)("TaskModel.AgendaTask", "Person")
+        End Get
+        Set
+            If (Not value Is Nothing)
+                CType(Me, IEntityWithRelationships).RelationshipManager.InitializeRelatedReference(Of Person)("TaskModel.AgendaTask", "Person", value)
+            End If
+        End Set
+    End Property
+
+    #End Region
+End Class
+
+''' <summary>
+''' No Metadata Documentation available.
+''' </summary>
+<EdmEntityTypeAttribute(NamespaceName:="TaskModel", Name:="UserEmail")>
+<Serializable()>
+<DataContractAttribute(IsReference:=True)>
+Public Partial Class UserEmail
+    Inherits EntityObject
+    #Region "Factory Method"
+
+    ''' <summary>
+    ''' Create a new UserEmail object.
+    ''' </summary>
+    ''' <param name="id">Initial value of the Id property.</param>
+    ''' <param name="ownerId">Initial value of the OwnerId property.</param>
+    ''' <param name="email">Initial value of the Email property.</param>
+    ''' <param name="confirmationToken">Initial value of the ConfirmationToken property.</param>
+    ''' <param name="confirmed">Initial value of the Confirmed property.</param>
+    Public Shared Function CreateUserEmail(id As Global.System.Int32, ownerId As Global.System.Guid, email As Global.System.String, confirmationToken As Global.System.String, confirmed As Global.System.Boolean) As UserEmail
+        Dim userEmail as UserEmail = New UserEmail
+        userEmail.Id = id
+        userEmail.OwnerId = ownerId
+        userEmail.Email = email
+        userEmail.ConfirmationToken = confirmationToken
+        userEmail.Confirmed = confirmed
+        Return userEmail
+    End Function
+
+    #End Region
+    #Region "Primitive Properties"
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=true, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Id() As Global.System.Int32
+        Get
+            Return _Id
+        End Get
+        Set
+            If (_Id <> Value) Then
+                OnIdChanging(value)
+                ReportPropertyChanging("Id")
+                _Id = StructuralObject.SetValidValue(value)
+                ReportPropertyChanged("Id")
+                OnIdChanged()
+            End If
+        End Set
+    End Property
+
+    Private _Id As Global.System.Int32
+    Private Partial Sub OnIdChanging(value As Global.System.Int32)
+    End Sub
+
+    Private Partial Sub OnIdChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property OwnerId() As Global.System.Guid
+        Get
+            Return _OwnerId
+        End Get
+        Set
+            OnOwnerIdChanging(value)
+            ReportPropertyChanging("OwnerId")
+            _OwnerId = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("OwnerId")
+            OnOwnerIdChanged()
+        End Set
+    End Property
+
+    Private _OwnerId As Global.System.Guid
+    Private Partial Sub OnOwnerIdChanging(value As Global.System.Guid)
+    End Sub
+
+    Private Partial Sub OnOwnerIdChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Email() As Global.System.String
+        Get
+            Return _Email
+        End Get
+        Set
+            OnEmailChanging(value)
+            ReportPropertyChanging("Email")
+            _Email = StructuralObject.SetValidValue(value, false)
+            ReportPropertyChanged("Email")
+            OnEmailChanged()
+        End Set
+    End Property
+
+    Private _Email As Global.System.String
+    Private Partial Sub OnEmailChanging(value As Global.System.String)
+    End Sub
+
+    Private Partial Sub OnEmailChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property ConfirmationToken() As Global.System.String
+        Get
+            Return _ConfirmationToken
+        End Get
+        Set
+            OnConfirmationTokenChanging(value)
+            ReportPropertyChanging("ConfirmationToken")
+            _ConfirmationToken = StructuralObject.SetValidValue(value, false)
+            ReportPropertyChanged("ConfirmationToken")
+            OnConfirmationTokenChanged()
+        End Set
+    End Property
+
+    Private _ConfirmationToken As Global.System.String
+    Private Partial Sub OnConfirmationTokenChanging(value As Global.System.String)
+    End Sub
+
+    Private Partial Sub OnConfirmationTokenChanged()
+    End Sub
+
+    ''' <summary>
+    ''' No Metadata Documentation available.
+    ''' </summary>
+    <EdmScalarPropertyAttribute(EntityKeyProperty:=false, IsNullable:=false)>
+    <DataMemberAttribute()>
+    Public Property Confirmed() As Global.System.Boolean
+        Get
+            Return _Confirmed
+        End Get
+        Set
+            OnConfirmedChanging(value)
+            ReportPropertyChanging("Confirmed")
+            _Confirmed = StructuralObject.SetValidValue(value)
+            ReportPropertyChanged("Confirmed")
+            OnConfirmedChanged()
+        End Set
+    End Property
+
+    Private _Confirmed As Global.System.Boolean
+    Private Partial Sub OnConfirmedChanging(value As Global.System.Boolean)
+    End Sub
+
+    Private Partial Sub OnConfirmedChanged()
+    End Sub
 
     #End Region
 End Class
