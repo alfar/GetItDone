@@ -1,4 +1,6 @@
-﻿Imports Mvc.Mailer
+﻿Imports PdfSharp.Pdf
+Imports PdfSharp.Drawing
+Imports Mvc.Mailer
 
 Namespace GetItDone
     <Authorize()>
@@ -80,13 +82,13 @@ Namespace GetItDone
 
         Function AssignContext(id As Integer, context As Integer, Optional From As String = "Process") As ActionResult
             taskservice.AssignContext(id, context)
-                           Return RedirectBack(From)
+            Return RedirectBack(From)
 
         End Function
 
         Function AssignNewContext(id As Integer, contextName As String, Optional From As String = "Process") As ActionResult
             taskservice.AssignContext(id, contextservice.CreateContext(contextName).Id)
-                            Return RedirectBack(From)
+            Return RedirectBack(From)
 
         End Function
 
@@ -95,7 +97,7 @@ Namespace GetItDone
             projectservice.CreateProject(task.Title, True)
 
             taskservice.DeleteTask(id)
-                           Return RedirectBack(From)
+            Return RedirectBack(From)
 
         End Function
 
@@ -131,7 +133,7 @@ Namespace GetItDone
                     taskservice.AssignPerson(task.Id, task.AssignToId, False)
                 End If
             End If
-                            Return RedirectBack(From)
+            Return RedirectBack(From)
 
         End Function
 
@@ -162,7 +164,7 @@ Namespace GetItDone
                 taskservice.PutInCalendar(task)
             End If
 
-                           Return RedirectBack(From)
+            Return RedirectBack(From)
 
         End Function
 
@@ -208,6 +210,41 @@ Namespace GetItDone
             End If
 
             Return Json(True)
+        End Function
+
+        Function PocketMod() As FileContentResult
+            Dim pmh As New PocketModHelper()
+
+            pmh.DrawGrid()
+
+            pmh.DrawTasks(0, "Calendar", taskservice.GetTodaysTasksForUser().Take(20))
+
+            Dim rs As New ReviewService(container)
+
+
+            Dim contexts As IQueryable(Of ContextReviewModel) = rs.GetNextActions()
+
+            Dim page As Integer = 1
+            For Each c As ContextReviewModel In rs.GetNextActions().Take(5)
+                pmh.DrawTasks(page, c.Name, c.Tasks.Take(20))
+                page += 1
+
+                If page > 7 Then
+                    Exit For
+                End If
+            Next
+            Select Case page
+                Case 7
+                    pmh.DrawInbox(7)
+                Case Is < 7
+                    While page < 7
+                        pmh.DrawInbox(page)
+                        page += 1
+                    End While
+                    pmh.DrawFrontPage(7)
+            End Select
+
+            Return pmh.ReturnDocument()
         End Function
     End Class
 End Namespace

@@ -80,6 +80,12 @@
     <Reference Include="Mvc.Mailer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MvcMailer.1.1\lib\40\Mvc.Mailer.dll</HintPath>
     </Reference>
+    <Reference Include="PdfSharp">
+      <HintPath>..\packages\PDFsharp.1.32.2602.0\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting">
+      <HintPath>..\packages\PDFsharp.1.32.2602.0\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -159,6 +165,7 @@
     <Compile Include="Helpers\MarkdownExtension.vb" />
     <Compile Include="Helpers\MobileCapableRazorViewEngine.vb" />
     <Compile Include="Helpers\MobileCapableWebFormViewEngine.vb" />
+    <Compile Include="Helpers\PocketModHelper.vb" />
     <Compile Include="Mailers\EmailMailer.vb" />
     <Compile Include="Mailers\IEmailMailer.vb" />
     <Compile Include="Mailers\ITaskMailer.vb" />
