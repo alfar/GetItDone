@@ -36,6 +36,7 @@
                         <li>@Html.ActionLink("Process", "Process", "Task")</li>
                         <li>@Html.ActionLink("Do", "Index", "Task")</li>
                         <li>@Html.ActionLink("Review", "Index", "Review")</li>
+                        <li class="special">@Html.ActionLink("Offline", "PocketMod", "Task", Nothing, New With {.target = "_blank"})</li>
                         <li class="special">@Html.ActionLink("My profile", "Index", "Profile")</li>
 					</ul>
 				</div>
