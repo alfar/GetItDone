@@ -240,6 +240,8 @@
     <Content Include="Content\themes\base\images\done.png" />
     <Content Include="Content\themes\base\images\edit.png" />
     <Content Include="Content\themes\base\images\hint.png" />
+    <Content Include="Content\themes\base\images\logo.png" />
+    <Content Include="Content\themes\base\images\logo.svg" />
     <Content Include="Content\themes\base\images\reference.png" />
     <Content Include="Content\themes\base\images\reprocess.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
