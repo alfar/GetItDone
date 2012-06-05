@@ -1,5 +1,7 @@
 bin/
 obj/
 Data/
-GetItDone/GetItDone.Publish.xml
-GetItDone/Web.Release.config
+GetItDone.Publish.xml
+Web.Release.config
+Web.Debug.config
+*.suo
