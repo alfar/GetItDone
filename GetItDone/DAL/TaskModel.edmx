@@ -6,6 +6,8 @@
     <edmx:StorageModels>
     <Schema Namespace="TaskModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="TaskModelStoreContainer">
+          <EntitySet Name="ChecklistItems" EntityType="TaskModel.Store.ChecklistItems" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ChecklistTemplates" EntityType="TaskModel.Store.ChecklistTemplates" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Contexts" EntityType="TaskModel.Store.Contexts" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Emails" EntityType="TaskModel.Store.Emails" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="People" EntityType="TaskModel.Store.People" store:Type="Tables" Schema="dbo" />
@@ -15,6 +17,14 @@
           <AssociationSet Name="FK_AgendaTask" Association="TaskModel.Store.FK_AgendaTask">
             <End Role="People" EntitySet="People" />
             <End Role="Tasks" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ChecklistItems_ChecklistTemplates" Association="TaskModel.Store.FK_ChecklistItems_ChecklistTemplates">
+            <End Role="ChecklistTemplates" EntitySet="ChecklistTemplates" />
+            <End Role="ChecklistItems" EntitySet="ChecklistItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ChecklistItems_Tasks" Association="TaskModel.Store.FK_ChecklistItems_Tasks">
+            <End Role="Tasks" EntitySet="Tasks" />
+            <End Role="ChecklistItems" EntitySet="ChecklistItems" />
           </AssociationSet>
           <AssociationSet Name="FK_ContextTask" Association="TaskModel.Store.FK_ContextTask">
             <End Role="Contexts" EntitySet="Contexts" />
@@ -29,6 +39,24 @@
             <End Role="Tasks" EntitySet="Tasks" />
           </AssociationSet>
         </EntityContainer>
+        <EntityType Name="ChecklistItems">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="TaskId" Type="int" />
+          <Property Name="TemplateId" Type="int" />
+          <Property Name="Finished" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ChecklistTemplates">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="200" />
+          <Property Name="OwnerId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
         <EntityType Name="Contexts">
           <Key>
             <PropertyRef Name="Id" />
@@ -113,6 +141,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ChecklistItems_ChecklistTemplates">
+          <End Role="ChecklistTemplates" Type="TaskModel.Store.ChecklistTemplates" Multiplicity="0..1" />
+          <End Role="ChecklistItems" Type="TaskModel.Store.ChecklistItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChecklistTemplates">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ChecklistItems">
+              <PropertyRef Name="TemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ChecklistItems_Tasks">
+          <End Role="Tasks" Type="TaskModel.Store.Tasks" Multiplicity="0..1" />
+          <End Role="ChecklistItems" Type="TaskModel.Store.ChecklistItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tasks">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ChecklistItems">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ContextTask">
           <End Role="Contexts" Type="TaskModel.Store.Contexts" Multiplicity="0..1" />
           <End Role="Tasks" Type="TaskModel.Store.Tasks" Multiplicity="*" />
@@ -176,6 +228,16 @@
             <End Role="Task" EntitySet="Tasks" />
           </AssociationSet>
           <EntitySet Name="Reviews" EntityType="TaskModel.Review" />
+          <EntitySet Name="ChecklistItems" EntityType="TaskModel.ChecklistItem" />
+          <EntitySet Name="ChecklistTemplates" EntityType="TaskModel.ChecklistTemplate" />
+          <AssociationSet Name="FK_ChecklistItems_ChecklistTemplates" Association="TaskModel.FK_ChecklistItems_ChecklistTemplates">
+            <End Role="ChecklistTemplate" EntitySet="ChecklistTemplates" />
+            <End Role="ChecklistItem" EntitySet="ChecklistItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ChecklistItems_Tasks" Association="TaskModel.FK_ChecklistItems_Tasks">
+            <End Role="Task" EntitySet="Tasks" />
+            <End Role="ChecklistItem" EntitySet="ChecklistItems" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Person">
           <Key>
@@ -210,6 +272,7 @@
           <Property Type="Int32" Name="AgendaId" />
           <NavigationProperty Name="People" Relationship="TaskModel.AgendaTask" FromRole="Task" ToRole="Person" />
           <NavigationProperty Name="AgendaTo" Relationship="TaskModel.AgendaTask" FromRole="Task" ToRole="Person" />
+          <NavigationProperty Name="ChecklistItems" Relationship="TaskModel.FK_ChecklistItems_Tasks" FromRole="Task" ToRole="ChecklistItem" />
           </EntityType>
         <Association Name="TaskAssignment">
           <End Type="TaskModel.Person" Role="Person" Multiplicity="0..1" />
@@ -306,6 +369,51 @@
           <Property Type="DateTime" Name="Finished" />
           <Property Type="Guid" Name="OwnerId" />
         </EntityType>
+        <EntityType Name="ChecklistItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="TaskId" />
+          <Property Type="Int32" Name="TemplateId" />
+          <Property Type="Boolean" Name="Finished" Nullable="false" />
+          <NavigationProperty Name="ChecklistTemplate" Relationship="TaskModel.FK_ChecklistItems_ChecklistTemplates" FromRole="ChecklistItem" ToRole="ChecklistTemplate" />
+          <NavigationProperty Name="Task" Relationship="TaskModel.FK_ChecklistItems_Tasks" FromRole="ChecklistItem" ToRole="Task" />
+        </EntityType>
+        <EntityType Name="ChecklistTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Type="Guid" Name="OwnerId" Nullable="false" />
+          <NavigationProperty Name="ChecklistItems" Relationship="TaskModel.FK_ChecklistItems_ChecklistTemplates" FromRole="ChecklistTemplate" ToRole="ChecklistItem" />
+        </EntityType>
+        <Association Name="FK_ChecklistItems_ChecklistTemplates">
+          <End Type="TaskModel.ChecklistTemplate" Role="ChecklistTemplate" Multiplicity="0..1" />
+          <End Type="TaskModel.ChecklistItem" Role="ChecklistItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChecklistTemplate">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ChecklistItem">
+              <PropertyRef Name="TemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ChecklistItems_Tasks">
+          <End Type="TaskModel.Task" Role="Task" Multiplicity="0..1" />
+          <End Type="TaskModel.ChecklistItem" Role="ChecklistItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Task">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ChecklistItem">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -390,6 +498,26 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ChecklistItems">
+            <EntityTypeMapping TypeName="TaskModel.ChecklistItem">
+              <MappingFragment StoreEntitySet="ChecklistItems">
+                <ScalarProperty Name="Finished" ColumnName="Finished" />
+                <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ChecklistTemplates">
+            <EntityTypeMapping TypeName="TaskModel.ChecklistTemplate">
+              <MappingFragment StoreEntitySet="ChecklistTemplates">
+                <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping></edmx:Mappings>
   </edmx:Runtime>
@@ -403,8 +531,9 @@
     <edmx:Options>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
-        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->
@@ -413,8 +542,8 @@
         <EntityTypeShape EntityType="TaskModel.Person" PointX="0.5" PointY="0.625" Width="1.5" Height="1.787985026041667" />
         <EntityTypeShape EntityType="TaskModel.Task" Width="1.5" PointX="3.875" PointY="0.625" Height="4.2879036458333326" />
         <AssociationConnector Association="TaskModel.TaskAssignment">
-          <ConnectorPoint PointX="2" PointY="2.2160211181640621" />
-          <ConnectorPoint PointX="3.875" PointY="2.2160211181640621" />
+          <ConnectorPoint PointX="2" PointY="2.2415571467081703" />
+          <ConnectorPoint PointX="3.875" PointY="2.2415571467081703" />
         </AssociationConnector>
         <EntityTypeShape EntityType="TaskModel.Context" Width="1.5" PointX="7.625" PointY="1" Height="1.787985026041667" />
         <AssociationConnector Association="TaskModel.ContextTask">
@@ -423,15 +552,25 @@
         </AssociationConnector>
         <EntityTypeShape EntityType="TaskModel.Project" Width="1.5" PointX="6.375" PointY="3.375" Height="1.5956835937499996" />
         <AssociationConnector Association="TaskModel.ProjectTask">
-          <ConnectorPoint PointX="6.375" PointY="4.1439518229166667" />
-          <ConnectorPoint PointX="5.375" PointY="4.1439518229166667" />
+          <ConnectorPoint PointX="6.375" PointY="4.2401025390625" />
+          <ConnectorPoint PointX="5.375" PointY="4.2401025390625" />
         </AssociationConnector>
         <EntityTypeShape EntityType="TaskModel.UserEmail" Width="1.5" PointX="0.75" PointY="3.75" Height="1.9802864583333317" />
         <AssociationConnector Association="TaskModel.AgendaTask" >
-          <ConnectorPoint PointX="2" PointY="1.3580105590820311" />
-          <ConnectorPoint PointX="3.875" PointY="1.3580105590820311" />
+          <ConnectorPoint PointX="2" PointY="1.3707785733540852" />
+          <ConnectorPoint PointX="3.875" PointY="1.3707785733540852" />
         </AssociationConnector>
         <EntityTypeShape EntityType="TaskModel.Review" Width="1.5" PointX="0.75" PointY="5.875" Height="1.7879850260416674" />
+        <EntityTypeShape EntityType="TaskModel.ChecklistItem" Width="1.5" PointX="3.875" PointY="5.5" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="TaskModel.ChecklistTemplate" Width="1.5" PointX="3.875" PointY="8.25" Height="1.7879850260416674" />
+        <AssociationConnector Association="TaskModel.FK_ChecklistItems_ChecklistTemplates" ManuallyRouted="false" >
+          <ConnectorPoint PointX="4.625" PointY="8.25" />
+          <ConnectorPoint PointX="4.625" PointY="7.8648893229166674" />
+        </AssociationConnector>
+        <AssociationConnector Association="TaskModel.FK_ChecklistItems_Tasks" >
+          <ConnectorPoint PointX="4.625" PointY="5.105205078125" />
+          <ConnectorPoint PointX="4.625" PointY="5.5" />
+        </AssociationConnector>
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

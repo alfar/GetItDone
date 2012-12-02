@@ -1,3 +1,4 @@
+/// <reference path="jquery-1.7.1.js" />
 /*!
  * jQuery UI 1.8.17
  *

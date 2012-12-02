@@ -9,9 +9,6 @@ End Code
     Please enter your user name and password. @Html.ActionLink("Register", "Register") if you don't have an account.
 </p>
 
-<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
-
 @Html.ValidationSummary(True, "Login was unsuccessful. Please correct the errors and try again.")
 
 @Using Html.BeginForm()
@@ -42,6 +39,10 @@ End Code
 
             <p>
                 <input type="submit" value="Log On" />
+            </p>
+
+            <p>
+                @Html.ActionLink("Forgot your password?", "Forgot")
             </p>
         </fieldset>
     </div>

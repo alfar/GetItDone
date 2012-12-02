@@ -6,9 +6,6 @@ End Code
 
 <h2>Calendar</h2>
 
-<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
-
 @Using Html.BeginForm(New With {.From = ViewBag.From})
     @Html.ValidationSummary(True)
     @<fieldset>
@@ -50,5 +47,7 @@ End Using
     @Html.ActionLink("Back to List", "Index")
 </div>
 <script type="text/javascript">
-    $(function () { $('.datefield').datepicker({dateFormat: 'dd-mm-yy'}); })
+    function pageInit() {
+        $(function () { $('.datefield').datepicker({ dateFormat: 'dd-mm-yy' }); })
+    }
 </script>

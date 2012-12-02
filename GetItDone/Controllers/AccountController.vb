@@ -1,9 +1,10 @@
-﻿Imports System.Diagnostics.CodeAnalysis
+﻿Imports Mvc.Mailer
+Imports System.Diagnostics.CodeAnalysis
 Imports System.Security.Principal
 Imports System.Web.Routing
 
 Public Class AccountController
-    Inherits System.Web.Mvc.Controller
+    Inherits GetItDone.GetToDoneControllerBase
 
     '
     ' GET: /Account/LogOn
@@ -18,6 +19,11 @@ Public Class AccountController
     <HttpPost()> _
     Public Function LogOn(ByVal model As LogOnModel, ByVal returnUrl As String) As ActionResult
         If ModelState.IsValid Then
+            Dim mailUserName As String = Membership.GetUserNameByEmail(model.UserName)
+            If mailUserName IsNot Nothing Then
+                model.UserName = mailUserName
+            End If
+
             If Membership.ValidateUser(model.UserName, model.Password) Then
                 FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe)
                 If Url.IsLocalUrl(returnUrl) AndAlso returnUrl.Length > 1 AndAlso returnUrl.StartsWith("/") _
@@ -114,6 +120,38 @@ Public Class AccountController
     ' GET: /Account/ChangePasswordSuccess
 
     Public Function ChangePasswordSuccess() As ActionResult
+        Return View()
+    End Function
+
+    Public Function Forgot() As ActionResult
+        Return View()
+    End Function
+
+    <HttpPost()> _
+    Public Function Forgot(email As String) As ActionResult
+        Dim useremail As UserEmail = (From e In container.Emails Where e.Email = email).FirstOrDefault
+
+        If useremail IsNot Nothing Then
+            useremail.ConfirmationToken = Guid.NewGuid.ToString("N")
+            container.SaveChanges()
+
+            Dim mailer As New GetItDone.Mailers.EmailMailer
+            mailer.Reset(useremail.Email, useremail.ConfirmationToken).Send()
+        End If
+
+        ViewBag.Message = "An email with instructions to reset the password was sent to " & email & "."
+        Return View()
+    End Function
+
+    Public Function ResetPassword(id As String) As ActionResult
+        Dim useremail As UserEmail = (From e In container.Emails Where e.ConfirmationToken = id).FirstOrDefault
+
+        If useremail IsNot Nothing Then
+            Dim mailer As New GetItDone.Mailers.EmailMailer
+            Dim foundUser As MembershipUser = Membership.GetUser(useremail.OwnerId)
+            mailer.NewPassword(useremail.Email, foundUser.UserName, foundUser.ResetPassword()).Send()
+        End If
+
         Return View()
     End Function
 

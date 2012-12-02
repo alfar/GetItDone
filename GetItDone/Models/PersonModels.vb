@@ -30,9 +30,18 @@ Public Class PersonModel
     Public Property HasAccount As Boolean
 End Class
 
+Public Class PersonDetailModel
+    Inherits PersonModel
+
+    Public Property AssignedTasks As IQueryable(Of TaskListModel)
+    Public Property AgendaTasks As IQueryable(Of TaskListModel)
+End Class
+
 Public Class PersonListModel
     Public Property Id As Integer
     Public Property Name As String
+    Public Property DelegatedTasks As Integer
+    Public Property AgendaTasks As Integer
 End Class
 
 Public Class CreatePersonModel
@@ -42,9 +51,9 @@ Public Class CreatePersonModel
 End Class
 
 Public Class PersonService
-    Private _model As TaskModelContainer
+    Private _model As ITaskModelContainer
 
-    Public Sub New(model As TaskModelContainer)
+    Public Sub New(model As ITaskModelContainer)
         _model = model
     End Sub
 
@@ -81,7 +90,12 @@ Public Class PersonService
 
     Public Function GetPersonForUser(id As Integer) As PersonModel
         Dim user As MembershipUser = Membership.GetUser()
-        Return (From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.Id = id Select New PersonModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email}).FirstOrDefault
+        Return (From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.Id = id Select New PersonModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email, .HasAccount = p.UserId <> Guid.Empty}).FirstOrDefault
+    End Function
+
+    Public Function GetPersonDetailsForUser(id As Integer) As PersonDetailModel
+        Dim user As MembershipUser = Membership.GetUser()
+        Return (From p In _model.People Where p.OwnerId = user.ProviderUserKey And p.Id = id Select New PersonDetailModel() With {.Id = p.Id, .Name = p.Name, .Email = p.Email, .HasAccount = p.UserId <> Guid.Empty, .AgendaTasks = (From t As Task In _model.Tasks Where t.OwnerId = user.ProviderUserKey AndAlso Not t.Finished AndAlso t.AgendaId = p.Id Select New TaskListModel With {.Id = t.Id, .ProjectName = t.Project.Name, .Title = t.Title}), .AssignedTasks = (From t As Task In _model.Tasks Where t.OwnerId = user.ProviderUserKey AndAlso Not t.Finished AndAlso t.AssignedToId = p.Id Select New TaskListModel With {.Id = t.Id, .ProjectName = t.Project.Name, .Title = t.Title})}).FirstOrDefault
     End Function
 
     Public Function GetProfileForUser() As ProfileModel
@@ -128,7 +142,7 @@ Public Class PersonService
 
     Function GetAgendaPeopleForUser() As IQueryable(Of PersonListModel)
         Dim user As MembershipUser = Membership.GetUser()
-        Return From t In _model.Tasks Where t.OwnerId = user.ProviderUserKey And Not t.Finished And t.AgendaTo IsNot Nothing Select p = t.AgendaTo Distinct Select New PersonListModel() With {.Id = p.Id, .Name = p.Name}
+        Return From t In _model.Tasks Where t.OwnerId = user.ProviderUserKey And Not t.Finished And (t.AgendaTo IsNot Nothing Or t.AssignedTo IsNot Nothing) Group By p = If(t.AgendaTo, t.AssignedTo) Into Group Select New PersonListModel() With {.Id = p.Id, .Name = p.Name, .AgendaTasks = Group.Count(Function(t) t.AgendaTo IsNot Nothing), .DelegatedTasks = Group.Count(Function(t) t.AssignedTo IsNot Nothing)}
     End Function
 
     Sub UpdatePerson(id As Integer, name As String, email As String)

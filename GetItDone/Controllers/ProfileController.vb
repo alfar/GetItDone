@@ -1,9 +1,9 @@
 ﻿Namespace GetItDone
     <Authorize()>
     Public Class ProfileController
-        Inherits System.Web.Mvc.Controller
+        Inherits GetItDone.GetToDoneControllerBase
 
-        Private service As New PersonService(New TaskModelContainer())
+        Private service As New PersonService(container)
 
         '
         ' GET: /Person

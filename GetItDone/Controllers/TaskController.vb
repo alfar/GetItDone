@@ -1,16 +1,32 @@
-﻿Imports PdfSharp.Pdf
+﻿Imports StackExchange.Profiling
+Imports PdfSharp.Pdf
 Imports PdfSharp.Drawing
 Imports Mvc.Mailer
 
 Namespace GetItDone
     <Authorize()>
     Public Class TaskController
-        Inherits System.Web.Mvc.Controller
+        Inherits GetToDoneControllerBase
 
+        Public Sub New()
+            _step = MiniProfiler.Current.Step("Controller")
+        End Sub
+
+        Public Sub New(taskService As ITaskService)
+            MyBase.New(taskService)
+        End Sub
+
+        Protected Overrides Sub Dispose(disposing As Boolean)
+            If _step IsNot Nothing Then
+                _step.Dispose()
+                _step = Nothing
+            End If
+            MyBase.Dispose(disposing)
+        End Sub
+
+        Private _step As IDisposable
         '
         ' GET: /Task
-        Private container As New TaskModelContainer()
-        Private taskservice As New TaskService(container)
         Private contextservice As New ContextService(container)
         Private projectservice As New ProjectService(container)
         Private personService As New PersonService(container)
@@ -26,10 +42,14 @@ Namespace GetItDone
         End Function
 
         Function Index(contextIds() As Integer) As ActionResult
+            ViewBag.From = "Index"
             If contextIds IsNot Nothing Then
-                contextservice.ToggleActiveContexts(contextIds)
+                Using MiniProfiler.Current.Step("Toggle active contexts")
+                    contextservice.ToggleActiveContexts(contextIds)
+                End Using
             End If
-            Return View(New DoTaskModel With {.Tasks = taskservice.GetTasksForUser(), .Contexts = contextservice.GetNonemptyContextsForUser(), .AgendaPeople = personService.GetAgendaPeopleForUser(), .CalendarTasks = taskservice.GetTodaysTasksForUser()})
+
+            Return View(New DoTaskModel With {.Tasks = taskservice.GetTasksForUser().ToList(), .Contexts = contextservice.GetNonemptyContextsForUser().ToList(), .AgendaPeople = personService.GetAgendaPeopleForUser().ToList(), .CalendarTasks = taskservice.GetTodaysTasksForUser().ToList()})
         End Function
 
         Public Function Agenda(id As Integer) As ActionResult
@@ -51,10 +71,24 @@ Namespace GetItDone
             Return View(model)
         End Function
 
+        Function Edit(id As Integer, Optional from As String = "Process") As ActionResult
+            ViewBag.From = from
+            Return View(taskservice.GetTaskForUser(id))
+        End Function
+
         <HttpPost()> _
         Function CreateStuff(model As CreateTaskModel) As ActionResult
             If ModelState.IsValid Then
-                taskservice.CreateTask(model.Title, "", Membership.GetUser().ProviderUserKey)
+                Dim t As TaskListModel = taskservice.CreateTask(model.Title, "", Membership.GetUser().ProviderUserKey)
+
+                If Not String.IsNullOrWhiteSpace(model.ProjectName) Then
+                    Dim p As ProjectModel = projectservice.GetProjectsForUser().FirstOrDefault(Function(pm) pm.Name = model.ProjectName)
+
+                    If p Is Nothing Then
+                        p = projectservice.CreateProject(model.ProjectName)
+                    End If
+                    taskservice.AssignProject(t.Id, p.Id)
+                End If
 
                 Return Json(model)
             End If
@@ -72,6 +106,7 @@ Namespace GetItDone
         End Function
 
         Function Process() As ActionResult
+            ViewBag.From = "Process"
             Dim task = taskservice.GetNextTaskForProcessing()
             If task IsNot Nothing Then
                 Return View(task)
@@ -111,7 +146,7 @@ Namespace GetItDone
         <HttpPost()>
         Function Assign(task As AssignTaskModel, Optional From As String = "Process") As ActionResult
             If ModelState.IsValid Then
-                taskservice.UpdateTask(task.Id, task.Title, task.Notes)
+                taskservice.UpdateTask(task.Id, task.Title, -1, task.Notes)
                 If task.AssignToId = 0 Then
                     task.AssignToId = personService.CreatePerson(task.AssignToName, task.AssignToEmail).Id
                 Else
@@ -139,7 +174,7 @@ Namespace GetItDone
 
         Function Finish(id As Integer, Optional From As String = "Index") As ActionResult
             ViewBag.From = [From]
-            Return View(taskservice.GetFinishingTask(id))
+            Return View(TestableTaskService.GetFinishingTask(id))
         End Function
 
         <HttpPost()>
@@ -181,17 +216,42 @@ Namespace GetItDone
             Return RedirectBack(From)
         End Function
 
-        Function Collect() As ActionResult
-            Return View()
+        Function Collect(Optional title As String = "", Optional projectId As Integer = 0) As ActionResult
+            Using MiniProfiler.Current.Step("Collect method")
+                ViewBag.TaskTitle = title
+                If projectId > 0 Then
+                    Dim p As ProjectModel = projectservice.GetProjectForUser(projectId)
+
+                    If p IsNot Nothing Then
+                        ViewBag.ProjectName = p.Name
+                    End If
+                End If
+
+                Return View()
+            End Using
         End Function
 
         <HttpPost()> _
-        Function Edit(em As TaskListModel) As ActionResult
+        Function Edit(em As TaskModel, Optional From As String = "Index") As ActionResult
             If ModelState.IsValid Then
-                taskservice.UpdateTask(em.Id, em.Title, Nothing)
+                Dim projectId As Integer = 0
+                If Not String.IsNullOrWhiteSpace(em.ProjectName) Then
+                    Dim p As ProjectModel = projectservice.GetProjectsForUser().FirstOrDefault(Function(pm) pm.Name = em.ProjectName)
+
+                    If p Is Nothing Then
+                        p = projectservice.CreateProject(em.ProjectName)
+                    End If
+                    projectId = p.Id
+                End If
+
+                taskservice.UpdateTask(em.Id, em.Title, projectId, em.Notes)
             End If
 
-            Return Json(True)
+            If Request.IsAjaxRequest Then
+                Return Json(True)
+            Else
+                Return RedirectBack(From)
+            End If
         End Function
 
         <HttpPost()> _
@@ -246,5 +306,7 @@ Namespace GetItDone
 
             Return pmh.ReturnDocument()
         End Function
+
+
     End Class
 End Namespace

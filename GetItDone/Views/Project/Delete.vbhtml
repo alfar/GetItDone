@@ -45,7 +45,10 @@ End Code
         @Html.DisplayFor(Function(model) model.CreatedDate)
     </div>
 </fieldset>
-@Using Html.BeginForm()
+@Using Html.BeginForm(New With {.From = ViewBag.From})
+    @<p>
+        @Html.CheckBox("cleanTasks", False) @Html.Label("cleanTasks", "Delete related tasks")
+    </p>
     @<p>
         <input type="submit" value="Delete" /> |
         @Html.ActionLink("Back to List", "Index")

@@ -26,9 +26,9 @@ Public Class CreateContextModel
 End Class
 
 Public Class ContextService
-    Private _model As TaskModelContainer
+    Private _model As ITaskModelContainer
 
-    Public Sub New(model As TaskModelContainer)
+    Public Sub New(model As ITaskModelContainer)
         _model = model
     End Sub
 
@@ -94,7 +94,9 @@ Public Class ContextService
         Dim ctxs = (From c As Context In _model.Contexts Where c.OwnerId = member.ProviderUserKey)
 
         For Each c In ctxs
-            c.Active = contextIds.Contains(c.Id)
+            If c.Active <> contextIds.Contains(c.Id) Then
+                c.Active = contextIds.Contains(c.Id)
+            End If
         Next
 
         _model.SaveChanges()

@@ -10,8 +10,7 @@ End Code
 
 <div id="thebigquestion">Are there any more actions related to '@Model.Title'?</div>
 
-@Html.Partial("_CreateStuff", New GetItDone.CreateTaskModel With {.Title = Model.Title})
-
+@Html.Partial("_CreateStuff", New GetItDone.CreateTaskModel With {.Title = Model.Title, .ProjectName = Model.ProjectName})
 <div class="huge-middle">
 @Using Html.BeginForm(New With {.From = ViewBag.From})
     @<input type="submit" value="No, I'm done" />

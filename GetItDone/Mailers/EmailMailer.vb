@@ -37,6 +37,34 @@ Namespace GetItDone.Mailers
             Return mailMessage
         End Function
 
+        Function Reset(email As String, token As String) As MailMessage
+            Dim mailMessage = New MailMessage() With {
+                .Subject = "Reset password"
+            }
+
+            mailMessage.To.Add(email)
+
+            ViewBag.Email = email
+            ViewBag.Token = token
+            PopulateBody(mailMessage, viewName:="ResetPassword")
+
+            Return mailMessage
+        End Function
+
+        Function NewPassword(email As String, username As String, password As String) As MailMessage
+            Dim mailMessage = New MailMessage() With {
+                .Subject = "Reset password"
+            }
+
+            mailMessage.To.Add(email)
+
+            ViewBag.UserName = username
+            ViewBag.Email = email
+            ViewBag.Password = password
+            PopulateBody(mailMessage, viewName:="NewPassword")
+
+            Return mailMessage
+        End Function
 
     End Class
 

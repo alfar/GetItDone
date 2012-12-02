@@ -6,9 +6,6 @@ End Code
 
 <h2>Create</h2>
 
-<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
-
 @Using Html.BeginForm()
     @Html.ValidationSummary(True)
     @<div class="editor-label">

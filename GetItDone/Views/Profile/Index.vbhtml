@@ -25,5 +25,6 @@ End Code
         <li>@Html.ActionLink("People", "Index", "Person")</li>
         <li>@Html.ActionLink("Contexts", "Index", "Context")</li>
         <li>@Html.ActionLink("Projects", "Index", "Project")</li>
+        <li>@Html.ActionLink("Offline", "PocketMod", "Task", Nothing, New With {.target = "_blank"})</li>
     </ul>
 </p>

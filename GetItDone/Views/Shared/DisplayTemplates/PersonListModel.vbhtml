@@ -1,0 +1,2 @@
+﻿@ModelType GetItDone.PersonListModel
+@Html.ActionLink(String.Format("{0} ({1}/{2})", Model.Name, Model.AgendaTasks, Model.DelegatedTasks), "Details", "Person", New With {.Id = Model.Id}, New With {.class = "card person", .style = "display: block;"})

@@ -5,6 +5,9 @@ Imports System.Globalization
 Public Class TaskModel
     Public Property Id As Integer
     Public Property Title As String
+    <UIHint("ProjectName")> _
+    Public Property ProjectName As String
+    Public Property ProjectId As Integer?
     <UIHint("MultilineText")>
     Public Property Notes As String
 End Class
@@ -33,9 +36,16 @@ Public Class AssignedTaskModel
     End Property
 End Class
 
+Public Class APICreateTaskModel
+    <Required()> _
+    Public Property Title As String
+End Class
+
 Public Class CreateTaskModel
     <Required()> _
     Public Property Title As String
+
+    Public Property ProjectName As String
 End Class
 
 Public Class FinishTaskModel
@@ -83,10 +93,10 @@ Public Class ProcessTaskModel
 End Class
 
 Public Class DoTaskModel
-    Public Property Tasks As IQueryable(Of TaskListModel)
-    Public Property Contexts As IQueryable(Of ContextListModel)
-    Public Property CalendarTasks As IQueryable(Of TaskListModel)
-    Public Property AgendaPeople As IQueryable(Of PersonListModel)
+    Public Property Tasks As List(Of TaskListModel)
+    Public Property Contexts As List(Of ContextListModel)
+    Public Property CalendarTasks As List(Of TaskListModel)
+    Public Property AgendaPeople As List(Of PersonListModel)
 End Class
 
 Public Class AgendaTaskModel
@@ -94,12 +104,32 @@ Public Class AgendaTaskModel
     Public Property Person As PersonModel
 End Class
 
-Public Class TaskService
-    Private _model As TaskModelContainer
+Public Interface ITaskService
+    ReadOnly Property Member As Guid
 
-    Public Sub New(model As TaskModelContainer)
+    Function GetFinishingTask(id As Integer) As TaskModel
+    Function CountInboxItems() As Integer
+End Interface
+
+Public Class TaskService
+    Implements ITaskService
+
+    Private _model As ITaskModelContainer
+    Private _member As Guid?
+
+    Public Sub New(model As ITaskModelContainer, Optional member As Guid = Nothing)
         _model = model
+        _member = member
     End Sub
+
+    Public ReadOnly Property Member As Guid Implements ITaskService.Member
+        Get
+            If Not _member.HasValue Then
+                _member = Membership.GetUser().ProviderUserKey
+            End If
+            Return _member.Value
+        End Get
+    End Property
 
     Public Function GetTasksForUser(key As String) As IQueryable(Of TaskListModel)
         Dim guid As Guid
@@ -207,7 +237,7 @@ Public Class TaskService
     Function GetTaskForUser(id As Integer) As TaskModel
         Dim member As MembershipUser = Membership.GetUser()
 
-        Return (From t In _model.Tasks Where t.Id = id AndAlso t.OwnerId = member.ProviderUserKey Select New TaskModel With {.Id = t.Id, .Title = t.Title, .Notes = t.Notes}).FirstOrDefault()
+        Return (From t In _model.Tasks Where t.Id = id AndAlso t.OwnerId = member.ProviderUserKey Select New TaskModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name, .Notes = t.Notes}).FirstOrDefault()
     End Function
 
     Sub AssignPerson(id As Integer, personId As Integer, createInboxTask As Boolean)
@@ -226,9 +256,8 @@ Public Class TaskService
         End If
     End Sub
 
-    Function GetFinishingTask(id As Integer) As TaskModel
-        Dim member As MembershipUser = Membership.GetUser()
-        Return (From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.Id = id Select New TaskModel With {.Id = t.Id, .Title = t.Title, .Notes = t.Notes}).FirstOrDefault()
+    Function GetFinishingTask(id As Integer) As TaskModel Implements ITaskService.GetFinishingTask
+        Return (From t In _model.Tasks Where t.OwnerId = Member And t.Id = id Select New TaskModel With {.Id = t.Id, .Title = t.Title, .ProjectId = t.ProjectId, .ProjectName = If(t.Project Is Nothing, Nothing, t.Project.Name), .Notes = t.Notes}).FirstOrDefault()
     End Function
 
     Sub FinishTask(id As Integer)
@@ -257,12 +286,19 @@ Public Class TaskService
         Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.Finished Order By t.DoneDate Descending Select New FinishedTaskListModel With {.Id = t.Id, .Title = t.Title, .Finished = t.DoneDate}
     End Function
 
-    Sub UpdateTask(id As Integer, Title As String, Notes As String)
+    Sub UpdateTask(id As Integer, Title As String, ProjectId As Integer, Notes As String)
         Dim member As MembershipUser = Membership.GetUser()
         Dim task As Task = _model.Tasks.FirstOrDefault(Function(t) t.Id = id AndAlso t.OwnerId = member.ProviderUserKey)
 
         If task IsNot Nothing Then
             task.Title = Title
+            If ProjectId <> -1 Then
+                If ProjectId = 0 Then
+                    task.ProjectId = Nothing
+                Else
+                    task.ProjectId = ProjectId
+                End If
+            End If
             If Notes IsNot Nothing Then
                 task.Notes = Notes
             End If
@@ -297,4 +333,9 @@ Public Class TaskService
             _model.SaveChanges()
         End If
     End Sub
+
+    Function CountInboxItems() As Integer Implements ITaskService.CountInboxItems
+        Dim member As MembershipUser = Membership.GetUser()
+        Return (From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.Context Is Nothing And t.AssignedTo Is Nothing And t.AgendaTo Is Nothing And Not t.DueDate.HasValue And Not t.Finished).Count
+    End Function
 End Class

@@ -1,11 +1,11 @@
 ﻿Namespace GetItDone
     <Authorize()>
     Public Class PersonController
-        Inherits System.Web.Mvc.Controller
+        Inherits GetItDone.GetToDoneControllerBase
 
-        Private _model As New TaskModelContainer()
-        Private service As New PersonService(_model)
+        Private service As New PersonService(container)
 
+        <OutputCache(NoStore:=True, Duration:=0, VaryByParam:="None")>
         Public Function SearchForAssign(query As String) As ActionResult
             Return PartialView(service.SearchPeopleForUser(query))
         End Function
@@ -26,6 +26,11 @@
             Catch
                 Return View()
             End Try
+        End Function
+
+        Function Details(id As Integer) As ActionResult
+            ViewBag.From = "Task:Index"
+            Return View(service.GetPersonDetailsForUser(id))
         End Function
 
         Function Edit(id As Integer) As ActionResult

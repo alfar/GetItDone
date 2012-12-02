@@ -1,13 +1,10 @@
 ﻿Namespace GetItDone
     <Authorize()>
     Public Class ReviewController
-        Inherits System.Web.Mvc.Controller
+        Inherits GetItDone.GetToDoneControllerBase
 
         '
         ' GET: /Review
-
-        Private container As New TaskModelContainer()
-        Private reviewservice As New ReviewService(container)
 
         Function Index() As ActionResult
             Return View(reviewservice.GetReviewInfoForUser())

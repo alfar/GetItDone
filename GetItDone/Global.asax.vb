@@ -1,4 +1,5 @@
-﻿' Note: For instructions on enabling IIS6 or IIS7 classic mode, 
+﻿Imports StackExchange.Profiling
+' Note: For instructions on enabling IIS6 or IIS7 classic mode, 
 ' visit http://go.microsoft.com/?LinkId=9394802
 
 Public Class MvcApplication
@@ -35,5 +36,16 @@ Public Class MvcApplication
 
         RegisterGlobalFilters(GlobalFilters.Filters)
         RegisterRoutes(RouteTable.Routes)
+    End Sub
+
+
+    Private Sub MvcApplication_BeginRequest(sender As Object, e As System.EventArgs) Handles Me.BeginRequest
+        If Not Request.Path.ToLower().Contains("/api/") Then
+            MiniProfiler.Start()
+        End If
+    End Sub
+
+    Private Sub MvcApplication_EndRequest(sender As Object, e As System.EventArgs) Handles Me.EndRequest
+        MiniProfiler.Stop()
     End Sub
 End Class

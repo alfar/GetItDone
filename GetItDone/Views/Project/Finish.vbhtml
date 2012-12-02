@@ -45,7 +45,7 @@ End Code
         @Html.DisplayFor(Function(model) model.CreatedDate)
     </div>
 </fieldset>
-@Using Html.BeginForm()
+@Using Html.BeginForm(New With {.From = ViewBag.From})
     @<p>
         <input type="submit" value="I'm done with this" /> |
         @Html.ActionLink("Back to List", "Index")

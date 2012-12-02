@@ -28,11 +28,10 @@ a {
 }
 #header {
 	color: @header-text-color;
-	height: 45px;
+	height: 50px;
 	#title {
 		margin: 0px 0px 0px 0px;
-		padding: 5px;
-		float: left;
+		padding: 5px 5px 0px 5px;
 		h1 {
 			margin-top: 0px;
 			margin-bottom: 0px;
@@ -47,11 +46,10 @@ a {
 	}
 
 	#logindisplay {
-		padding: 5px;	
-		line-height: 20px;
+		padding: 0px 5px 5px 5px;	
+		line-height: 10px;
 		font-size: 10px;
 		margin: 0px 20px 0px 0px;
-		float: right;
 	}
 	#menucontainer {
 	}
@@ -80,10 +78,26 @@ a {
 				border-radius: 0px 0px 6px 6px;
 				text-decoration: none;
 				padding-top: 0px;
+
+				.indicator {
+					display: inline-block;
+					height: 20px;
+					margin-left: 5px;
+					padding: 2px;
+					border-radius: 0px 0px 4px 4px;
+					background-color: @menu-special-bg-color;
+					color: @menu-special-text-color;
+					vertical-align: top;
+					line-height: 20px;
+				}
 			}
 
 			a:hover {
 				padding-top: 10px;
+
+				.indicator {
+					margin-top: -10px;
+				}
 			}
 		}
 		li.special a {
@@ -222,14 +236,20 @@ table th {
     border: 1px solid #666;
     padding: 10px;
     line-height: 20px;
+
+	&.right {
+		vertical-align: top;
+		display: inline-block;
+		width: 200px;
+	}
 }
 
 .huge-middle 
 {
     margin-left: auto;
     margin-right: auto;
-    padding-top: 100px;
-    padding-bottom: 100px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     width: 700px;
 }
 
@@ -351,7 +371,7 @@ ul.tasklist li
     clear: left;   
     font-style: italic; 
 }
-.task .commands, .card .commands
+.task .commands, .card .commands, .object .commands
 {
     float: right;
 }
@@ -364,13 +384,13 @@ ul.tasklist li
     margin-bottom: 5px;
 }
 
-.task a.command img, .card a.command img
+a.command img
 {
     border: 0px;
     opacity: 0.2; 
 }
 
-.task a:hover.command img, .card a:hover.command img
+a:hover.command img
 {
     border: 0px;
     opacity: 1;
@@ -506,4 +526,12 @@ ul.tasklist li
     	margin: 4px;
     	padding: 12px;   	
     }
+}
+table.layout {
+	border: none;
+	td {
+		border: none;
+		vertical-align: top;
+		padding: 2px;
+	}
 }

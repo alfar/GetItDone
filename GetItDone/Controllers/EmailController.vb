@@ -3,9 +3,9 @@
 Namespace GetItDone
     <Authorize()> _
     Public Class EmailController
-        Inherits System.Web.Mvc.Controller
+        Inherits GetItDone.GetToDoneControllerBase
 
-        Private service As New EmailService(New TaskModelContainer())
+        Private service As New EmailService(container)
 
         '
         ' GET: /Email

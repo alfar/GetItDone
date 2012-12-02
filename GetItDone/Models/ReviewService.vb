@@ -30,13 +30,13 @@ Public Class WaitingForReviewModel
 End Class
 
 Public Class ReviewService
-    Private _model As TaskModelContainer
+    Private _model As ITaskModelContainer
     Private _taskService As TaskService
     Private _contextService As ContextService
     Private _projectService As ProjectService
     Private _personService As PersonService
 
-    Public Sub New(model As TaskModelContainer)
+    Public Sub New(model As ITaskModelContainer)
         _model = model
         _taskService = New TaskService(model)
         _contextService = New ContextService(model)
@@ -58,6 +58,13 @@ Public Class ReviewService
         Dim nextweek As DateTime = DateTime.Now.AddDays(7)
 
         Return From t In _model.Tasks Where t.OwnerId = member.ProviderUserKey And t.DueDate.HasValue And t.DueDate.Value > lastweek And t.DueDate.Value < nextweek Order By t.DueDate Select New CalendarTaskListModel With {.Id = t.Id, .Title = t.Title, .DueDate = t.DueDate, .Finished = t.Finished}
+    End Function
+
+    Function GetCalendarForUser(userkey As Guid) As IQueryable(Of CalendarTaskListModel)
+        Dim lastweek As DateTime = DateTime.Now.AddDays(-7)
+        Dim nextweek As DateTime = DateTime.Now.AddDays(7)
+
+        Return From t In _model.Tasks Where t.OwnerId = userkey And t.DueDate.HasValue And t.DueDate.Value > lastweek And t.DueDate.Value < nextweek Order By t.DueDate Select New CalendarTaskListModel With {.Id = t.Id, .Title = t.Title, .DueDate = t.DueDate, .Finished = t.Finished}
     End Function
 
     Function GetActiveReviewForUser() As ReviewModel
@@ -91,12 +98,12 @@ Public Class ReviewService
 
     Private Function GetEmptyProjectsForUser() As IQueryable(Of ProjectReviewModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Finished And Not p.Tasks.Any() Select New ProjectReviewModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate, .HasBrainstorm = Not String.IsNullOrEmpty(p.Brainstorm), .HasVision = Not String.IsNullOrEmpty(p.Vision), .HasPurpose = Not String.IsNullOrEmpty(p.Purpose), .HasPrinciples = Not String.IsNullOrEmpty(p.Principles), .HasOrganizing = Not String.IsNullOrEmpty(p.Organization)}
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Finished And Not p.Tasks.Any(Function(t) Not t.Finished) Select New ProjectReviewModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate, .HasBrainstorm = Not String.IsNullOrEmpty(p.Brainstorm), .HasVision = Not String.IsNullOrEmpty(p.Vision), .HasPurpose = Not String.IsNullOrEmpty(p.Purpose), .HasPrinciples = Not String.IsNullOrEmpty(p.Principles), .HasOrganizing = Not String.IsNullOrEmpty(p.Organization)}
     End Function
 
     Private Function GetActiveProjectsForUser() As IQueryable(Of ProjectReviewModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Finished And p.Tasks.Any() Select New ProjectReviewModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate, .HasBrainstorm = Not String.IsNullOrEmpty(p.Brainstorm), .HasVision = Not String.IsNullOrEmpty(p.Vision), .HasPurpose = Not String.IsNullOrEmpty(p.Purpose), .HasPrinciples = Not String.IsNullOrEmpty(p.Principles), .HasOrganizing = Not String.IsNullOrEmpty(p.Organization)}
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Finished And p.Tasks.Any(Function(t) Not t.Finished) Select New ProjectReviewModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate, .HasBrainstorm = Not String.IsNullOrEmpty(p.Brainstorm), .HasVision = Not String.IsNullOrEmpty(p.Vision), .HasPurpose = Not String.IsNullOrEmpty(p.Purpose), .HasPrinciples = Not String.IsNullOrEmpty(p.Principles), .HasOrganizing = Not String.IsNullOrEmpty(p.Organization)}
     End Function
 
     Private Function GetFutureProjectsForUser() As IQueryable(Of ProjectModel)

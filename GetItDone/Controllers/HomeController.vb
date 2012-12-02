@@ -1,8 +1,5 @@
 ﻿Public Class HomeController
-    Inherits System.Web.Mvc.Controller
-
-    Private container As New TaskModelContainer()
-    Private reviewservice As New ReviewService(container)
+    Inherits GetItDone.GetToDoneControllerBase
 
     Function Index() As ActionResult
         ViewBag.PeopleCount = Membership.GetAllUsers().Count

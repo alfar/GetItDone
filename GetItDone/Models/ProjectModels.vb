@@ -61,15 +61,15 @@ Public Class CreateProjectModel
 End Class
 
 Public Class ProjectService
-    Private _model As TaskModelContainer
+    Private _model As ITaskModelContainer
 
-    Public Sub New(model As TaskModelContainer)
+    Public Sub New(model As ITaskModelContainer)
         _model = model
     End Sub
 
     Public Function GetProjectsForUser() As IQueryable(Of ProjectModel)
         Dim member As MembershipUser = Membership.GetUser()
-        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Finished Select New ProjectListModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate, .NextActions = From t In p.Tasks Select New TaskListModel With {.Id = t.Id, .Title = t.Title}}
+        Return From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And Not p.Future And Not p.Finished Select New ProjectListModel With {.Id = p.Id, .Name = p.Name, .CreatedDate = p.CreatedDate, .NextActions = From t In p.Tasks Where Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title}}
     End Function
 
     Public Function GetFutureProjectsForUser() As IQueryable(Of ProjectModel)
@@ -101,7 +101,7 @@ Public Class ProjectService
 
     Function GetProjectForUser(id As Integer) As ProjectDetailModel
         Dim member As MembershipUser = Membership.GetUser()
-        Return (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id Select New ProjectDetailModel With {.Id = p.Id, .Name = p.Name, .Purpose = p.Purpose, .Principles = p.Principles, .Vision = p.Vision, .Brainstorm = p.Brainstorm, .Organizing = p.Organization, .CreatedDate = p.createdDate, .NextActions = From t In p.Tasks Select New TaskListModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name}}).FirstOrDefault()
+        Return (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id Select New ProjectDetailModel With {.Id = p.Id, .Name = p.Name, .Purpose = p.Purpose, .Principles = p.Principles, .Vision = p.Vision, .Brainstorm = p.Brainstorm, .Organizing = p.Organization, .CreatedDate = p.CreatedDate, .NextActions = From t In p.Tasks Where Not t.Finished Select New TaskListModel With {.Id = t.Id, .Title = t.Title, .ProjectName = t.Project.Name}}).FirstOrDefault()
     End Function
 
     Sub UpdateProject(id As Integer, data As ProjectDetailModel)
@@ -144,17 +144,34 @@ Public Class ProjectService
 
         Dim proj As Project = (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id).FirstOrDefault
         If proj IsNot Nothing Then
-            For Each t As Task In proj.Tasks
+            For Each t As Task In proj.Tasks.ToList()
                 If cleanTasks Then
-                    _model.DeleteObject(t)
+                    _model.Tasks.DeleteObject(t)
                 Else
                     t.Project = Nothing
                 End If
             Next
 
-            _model.DeleteObject(proj)
+            _model.Projects.DeleteObject(proj)
             _model.SaveChanges()
         End If
     End Sub
 
+    Sub SetFuture(id As Integer, future As Boolean)
+        Dim member As MembershipUser = Membership.GetUser()
+
+        Dim proj As Project = (From p In _model.Projects Where p.OwnerId = member.ProviderUserKey And p.Id = id).FirstOrDefault
+        If proj IsNot Nothing Then
+            proj.Future = future
+            _model.SaveChanges()
+        End If
+    End Sub
+
+    Sub PromoteProject(id As Integer)
+        SetFuture(id, False)
+    End Sub
+
+    Sub DemoteProject(id As Integer)
+        SetFuture(id, True)
+    End Sub
 End Class

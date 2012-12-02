@@ -1,12 +1,12 @@
 ﻿Namespace GetItDone
     <Authorize()> _
     Public Class ContextController
-        Inherits System.Web.Mvc.Controller
+        Inherits GetItDone.GetToDoneControllerBase
 
         '
         ' GET: /Context
 
-        Private service As New ContextService(New TaskModelContainer())
+        Private service As New ContextService(container)
 
         Function Index() As ActionResult
             Return View(service.GetContextsForUser())

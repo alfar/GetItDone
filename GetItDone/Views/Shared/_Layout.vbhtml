@@ -1,31 +1,22 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@Imports StackExchange.Profiling
+@Using MiniProfiler.Current.Step("Presentation")
+    Cassette.Views.Bundles.Reference ("/Content/Site.less")
+    Cassette.Views.Bundles.Reference("/Content/themes/base/jquery.ui.base.css")
+    Cassette.Views.Bundles.Reference("/Content/themes/base/jquery.ui.core.css")
+    Cassette.Views.Bundles.Reference("/Content/themes/base/jquery.ui.button.css")
+    Cassette.Views.Bundles.Reference("/Content/themes/base/jquery.ui.selectable.css")
+    Cassette.Views.Bundles.Reference("/Content/themes/base/jquery.ui.theme.css")
+    Cassette.Views.Bundles.Reference("/Content/themes/base/jquery.ui.datepicker.css")
+    Cassette.Views.Bundles.Reference("/Scripts/jquery-1.7.1.js")
+    Cassette.Views.Bundles.Reference("/Scripts/jquery-ui-1.8.17.js")
+    Cassette.Views.Bundles.Reference("/Scripts/jquery.unobtrusive-ajax.js")
+    Cassette.Views.Bundles.Reference("/Scripts/GoogleAnalytics.js")
+@<!DOCTYPE html>
+@<html>
 <head>
     <title>@ViewData("Title")</title>
-    <link href="@Url.Content("~/Content/Site.less")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/themes/base/jquery.ui.base.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/themes/base/jquery.ui.core.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/themes/base/jquery.ui.button.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/themes/base/jquery.ui.selectable.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/themes/base/jquery.ui.theme.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/themes/base/jquery.ui.datepicker.css")" rel="stylesheet" type="text/css" />
-    <script src="@Url.Content("~/Scripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.17.min.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.js")" type="text/javascript"></script>
-    <script src="@Url.Content("~/Scripts/jquery.hotkeys-0.7.9.min.js")" type="text/javascript"></script>
-<!--    <script src="@Url.Content("~/Scripts/gettodone.js")" type="text/javascript"></script>-->
-    <script type="text/javascript">
-
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-4996356-6']);
-        _gaq.push(['_trackPageview']);
-
-        (function () {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
+    @Bundles.RenderStylesheets()
+    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
 </head>
 	<body>
 		<div class="page">
@@ -33,10 +24,10 @@
 				<div id="menucontainer">
 					<ul id="menu">
                         <li>@Html.ActionLink("Collect", "Collect", "Task")</li>
-                        <li>@Html.ActionLink("Process", "Process", "Task")</li>
+                        <li id="ProcessTab">@Html.ActionLink("Process", "Process", "Task")</li>
                         <li>@Html.ActionLink("Do", "Index", "Task")</li>
-                        <li>@Html.ActionLink("Review", "Index", "Review")</li>
-                        <li class="special">@Html.ActionLink("Offline", "PocketMod", "Task", Nothing, New With {.target = "_blank"})</li>
+                        <li id="ReviewTab">@Html.ActionLink("Review", "Index", "Review")</li>
+                        <li class="special">@Html.ActionLink("Projects", "Index", "Project")</li>
                         <li class="special">@Html.ActionLink("My profile", "Index", "Profile")</li>
 					</ul>
 				</div>
@@ -51,5 +42,18 @@
                 @RenderBody()
 			</div>
 		</div>
+        @Html.Hidden("InboxItemCount", ViewBag.InboxItemCount)
+        @Html.Hidden("ReviewNotification", ViewBag.ReviewNotification)
+        @Bundles.RenderScripts()
+        <script type="text/javascript">
+            var uvOptions = {};
+            (function () {
+                var uv = document.createElement('script'); uv.type = 'text/javascript'; uv.async = true;
+                uv.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'widget.uservoice.com/vwducbfNiqlPTFUjgMWQA.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(uv, s);
+            })();
+        </script>
 	</body>
 </html>
+End Using
+    

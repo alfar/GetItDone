@@ -3,7 +3,7 @@
 @Code
     ViewData("Title") = "Assign"
 End Code
-
+ 
 <h2>Delegate</h2>
 
 <div class="info">This is something someone else should do. Find the right person to do it.</div>
@@ -38,10 +38,9 @@ End Code
     @<br style="clear: both;"/>
     @Html.HiddenFor(Function(t) t.SendType)
 End Using
-
 <script type="text/javascript">
     var search_timeout = undefined;
-    $(function () {
+    function pageInit() {
         $('#NameLookup').focus();
 
         function AdjustSendButtons() {
@@ -93,7 +92,7 @@ End Using
                     search_timeout = undefined;
                     $.ajax({
                         method: 'POST',
-                        url: '@Url.Action("SearchForAssign", "Person")',
+                        url: '/Person/SearchForAssign',
                         data: { 'query': query },
                         success: function (data) {
                             $('#PeopleList').html(data);
@@ -122,6 +121,6 @@ End Using
         $('#AssignTypeCreate').on('click', AdjustSendButtons);
 
         $('#AssignToEmail').on('keyup', AdjustSendButtons);
-    });
-
+    };
 </script>
+
